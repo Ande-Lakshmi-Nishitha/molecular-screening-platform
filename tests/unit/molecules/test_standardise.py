@@ -11,7 +11,7 @@ from unittest import mock
 
 from rdkit import Chem
 
-from services.molecule.standardise import (
+from backend.services.molecule.standardise import (
     ERROR_CODE,
     MoleculeError,
     StandardisedMolecule,
@@ -141,7 +141,7 @@ class InvalidInputTests(unittest.TestCase):
         self.assertIn("could not be standardised", ctx.exception.message)
 
     def test_fr004_missing_inchikey_is_rejected(self):
-        with mock.patch("services.molecule.standardise.Chem.MolToInchiKey", return_value=""):
+        with mock.patch("backend.services.molecule.standardise.Chem.MolToInchiKey", return_value=""):
             with self.assertRaises(MoleculeError):
                 standardise_smiles("CCO")
 

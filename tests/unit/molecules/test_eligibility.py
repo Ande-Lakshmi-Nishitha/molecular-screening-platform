@@ -9,7 +9,7 @@ import unittest
 
 from rdkit import Chem
 
-from services.molecule.eligibility import (
+from backend.services.molecule.eligibility import (
     SKIP_NO_FRAGMENT,
     SKIP_NO_TARGET,
     SKIP_UNSUPPORTED_ATOM,
@@ -17,7 +17,7 @@ from services.molecule.eligibility import (
     TierDecision,
     tier_eligibility,
 )
-from services.molecule.standardise import standardise_smiles
+from backend.services.molecule.standardise import standardise_smiles
 
 TARGET = "CHEMBL203"
 
