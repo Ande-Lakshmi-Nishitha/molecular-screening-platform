@@ -1,0 +1,5 @@
+{
+  "name": "msp-frontend",
+  "private": true,
+  "scripts": { "lint": "eslint src", "test": "echo \"add tests\" && exit 0" }
+}

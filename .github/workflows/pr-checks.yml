@@ -1,0 +1,101 @@
+name: PR rules
+
+# Team rules for the three permanent personal branches:
+#  - a PR goes from dev-ayushi, dev-nishitha or dev-abheetha into main, and nothing else
+#  - the PR author must be the owner of that branch (.github/team.json on main)
+#  - the title describes the change; unit-test evidence is ticked in the description
+#  - the author becomes the PR assignee
+#  - after merge: the author must not be the one who merged
+# No Jira key is needed in branches, commits or titles; requirement IDs are optional.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  validate:
+    name: PR format
+    if: ${{ github.event.action != 'closed' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch, author, title and evidence
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { owner, repo } = context.repo;
+            const problems = [];
+
+            // The team list is read from the base branch, so a PR cannot edit its own rules.
+            let team;
+            try {
+              const res = await github.rest.repos.getContent({ owner, repo, path: '.github/team.json', ref: pr.base.ref });
+              team = JSON.parse(Buffer.from(res.data.content, 'base64').toString('utf8'));
+            } catch (e) {
+              core.setFailed('Could not read .github/team.json from ' + pr.base.ref + ': ' + e.message);
+              return;
+            }
+            const branches = Object.keys(team);
+
+            if (pr.base.ref !== 'main') {
+              problems.push('PRs must target main (this one targets ' + pr.base.ref + ').');
+            }
+            if (!pr.head.repo || pr.head.repo.full_name !== pr.base.repo.full_name) {
+              problems.push('PRs must come from a branch in this repository, not from a fork.');
+            }
+
+            const expected = team[pr.head.ref];
+            if (!expected) {
+              problems.push('Branch "' + pr.head.ref + '" is not a personal branch. Work only on ' + branches.join(', ') + '.');
+            } else if (pr.user.login.toLowerCase() !== String(expected).toLowerCase()) {
+              problems.push('Branch ' + pr.head.ref + ' belongs to ' + expected + ', but this PR was opened by ' + pr.user.login + '. Raise the PR from your own branch.');
+            }
+
+            const title = (pr.title || '').trim();
+            if (title.length < 15 || /^dev[-\s]/i.test(title)) {
+              problems.push('Title must describe the change in at least 15 characters, e.g. "Add ML worker and Tox21 signals (FR-010)". A branch name is not a title.');
+            }
+
+            const body = pr.body || '';
+            if (!/- \[x\] .*unit-test evidence/i.test(body)) {
+              problems.push('Tick the "Unit-test evidence attached" box in the PR description.');
+            }
+
+            // The member who raises the PR is its assignee.
+            try {
+              await github.rest.issues.addAssignees({ owner, repo, issue_number: pr.number, assignees: [pr.user.login] });
+            } catch (e) {
+              core.warning('Could not assign ' + pr.user.login + ': ' + e.message);
+            }
+
+            if (problems.length) {
+              core.setFailed(problems.map(p => '- ' + p).join('\n'));
+            }
+
+  merge-audit:
+    name: Author did not merge own PR
+    if: ${{ github.event.action == 'closed' && github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Flag self-merges
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const merger = pr.merged_by && pr.merged_by.login;
+            if (merger && merger === pr.user.login) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: 'Process violation: this PR was merged by its own author. ' +
+                      'Per the test plan, another repo owner must review and merge. ' +
+                      'Please have a second owner review it now and log it in the deviation log.',
+              });
+              core.setFailed('Author merged their own PR.');
+            }

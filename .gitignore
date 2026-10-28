@@ -1,0 +1,30 @@
+# secrets and environment
+.env
+*.pem
+*.key
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.coverage
+htmlcov/
+.pytest_cache/
+# never commit pickle files (SEC-008) or model weights
+*.pkl
+*.pickle
+models/*
+!models/README.md
+# node
+node_modules/
+frontend/build/
+frontend/dist/
+# data and outputs
+training/data/*
+!training/data/README.md
+backups/
+# editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

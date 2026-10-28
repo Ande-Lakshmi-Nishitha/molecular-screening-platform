@@ -1,0 +1,3 @@
+# Supported targets (FR-015, FR-020). Owner: Nishitha. Open item TBD-C2.
+# proposed: EGFR, BACE1, HIV-1 protease; each entry: id, name, chembl_id, unit (pIC50 or pKi)
+targets: []

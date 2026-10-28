@@ -1,0 +1,8 @@
+# Repo owners: all three members. Usernames must be real GitHub usernames
+# (the part after github.com/ on your profile), no spaces, keeping the @ sign.
+# Every file lists all three owners, so whoever is NOT the author can satisfy
+# "Require review from Code Owners". Do not list only one owner per folder:
+# a sole owner cannot approve their own PR and the PR would be stuck.
+# Keep this list in step with .github/team.json.
+
+* @i-ayushi-k @Ande-Lakshmi-Nishitha @abheetha16

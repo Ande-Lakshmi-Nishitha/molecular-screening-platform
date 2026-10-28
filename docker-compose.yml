@@ -1,0 +1,3 @@
+# Services: proxy, api, worker-ml, worker-dl, worker-qml, worker-agg, redis, postgres, db-backup.
+# Only the proxy publishes a port. Owner: Abheetha (story: Docker Compose stack).
+services: {}

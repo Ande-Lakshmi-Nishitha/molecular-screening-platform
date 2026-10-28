@@ -1,0 +1,4 @@
+# Versioned triage rules (FR-033, BR-005). Owner: Ayushi. Load with yaml.safe_load only.
+version: "0.1"
+# five dimensions: developability, safety_signals, target_activity, electronic_stability, confidence
+# thresholds are open until TBD-C9

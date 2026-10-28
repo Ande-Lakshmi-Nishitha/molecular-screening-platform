@@ -1,0 +1,5 @@
+# Dev and CI tools. Pin exact versions after installing (pip freeze) once TBD-C1 is decided (SEC-008).
+pylint
+coverage
+bandit
+pip-audit
