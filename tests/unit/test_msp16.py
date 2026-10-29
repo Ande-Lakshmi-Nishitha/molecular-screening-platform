@@ -1,6 +1,7 @@
+import os
 import unittest
 from contextlib import contextmanager
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from flask import Flask
 from redis.exceptions import RedisError
@@ -13,6 +14,7 @@ from backend.api.auth.routes import auth_bp
 from backend.db.models import AuditLog, Base, User
 
 GOOD = {"email": "researcher1@example.com", "password": "Str0ng-pass!"}
+SECRET = "unit-test-secret-unit-test-secret-1234"
 
 
 class FakeRedis:
@@ -58,8 +60,12 @@ class AuthTests(unittest.TestCase):  # FR-041..044, FR-052, FR-065
                 session.close()
 
         self.store = LockoutStore(FakeRedis(), 3, 15)
+        env = patch.dict(os.environ, {"JWT_SECRET": SECRET})
+        env.start()
+        self.addCleanup(env.stop)
         for target, value in (("backend.api.auth.routes.session_scope", scope),
-                              ("backend.api.auth.routes.get_lockout_store", lambda: self.store)):
+                              ("backend.api.auth.routes.get_lockout_store", lambda: self.store),
+                              ("backend.api.auth.routes.get_session_store", lambda: MagicMock())):
             patcher = patch(target, value)
             patcher.start()
             self.addCleanup(patcher.stop)
@@ -94,7 +100,9 @@ class AuthTests(unittest.TestCase):  # FR-041..044, FR-052, FR-065
 
     def test_login_success(self):
         self.post("register", GOOD)
-        self.assertEqual(self.post("login", GOOD).status_code, 200)
+        resp = self.post("login", GOOD)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn("token", resp.get_json())
 
     def test_wrong_password_and_unknown_email_look_identical(self):
         self.post("register", GOOD)
