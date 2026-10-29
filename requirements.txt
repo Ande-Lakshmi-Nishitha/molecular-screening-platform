@@ -1,3 +1,7 @@
 # Runtime dependencies. Pin exact versions once TBD-C1 is decided (SEC-008).
+SQLAlchemy==2.0.36
+alembic==1.13.3
+psycopg2-binary==2.9.10
+PyYAML==6.0.2
 
 rdkit==2026.9.1
