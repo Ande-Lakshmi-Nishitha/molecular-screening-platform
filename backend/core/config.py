@@ -1,3 +1,8 @@
+"""Settings from environment (all open TBD-C12 values).
+
+Owner: Ayushi. Requirements: SEC-004, SEC-003.
+Defaults below are PROVISIONAL until TBD-C8/C9/C10/C12 are decided.
+"""
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -21,6 +26,8 @@ def _f(name, default):
 
 @dataclass(frozen=True)
 class Settings:
+    """All configuration values, read from the environment."""
+
     database_url: str
     redis_url: str
     jwt_secret: str
@@ -35,6 +42,7 @@ class Settings:
     qml_soft_limit_s: int
     qml_hard_limit_s: int
     session_idle_min: int
+    session_max_hours: int
     max_failed_logins: int
     lockout_min: int
     rate_limit: str
@@ -49,6 +57,7 @@ class Settings:
 
     @classmethod
     def from_env(cls):
+        """Build the settings from environment variables, with provisional defaults."""
         return cls(
             database_url=_s("DATABASE_URL"),
             redis_url=_s("REDIS_URL", "redis://localhost:6379/0"),
@@ -64,6 +73,7 @@ class Settings:
             qml_soft_limit_s=_i("QML_SOFT_LIMIT_S", 300),
             qml_hard_limit_s=_i("QML_HARD_LIMIT_S", 600),
             session_idle_min=_i("SESSION_IDLE_MIN", 30),
+            session_max_hours=_i("SESSION_MAX_HOURS", 8),
             max_failed_logins=_i("MAX_FAILED_LOGINS", 5),
             lockout_min=_i("LOCKOUT_MIN", 15),
             rate_limit=_s("RATE_LIMIT", "60/minute"),
@@ -79,15 +89,18 @@ class Settings:
 
 
 def load_yaml_safe(path):
+    """Load a YAML file with the safe loader only."""
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
 def load_triage_rules(settings=None):
+    """Load the versioned triage rules (FR-033)."""
     settings = settings or Settings.from_env()
     return load_yaml_safe(settings.triage_rules_path)
 
 
 def load_targets(settings=None):
+    """Load the supported targets (FR-015)."""
     settings = settings or Settings.from_env()
     return load_yaml_safe(settings.targets_path)
