@@ -9,3 +9,4 @@ alembic==1.13.3
 PyYAML==6.0.2
 
 rdkit==2026.9.1
+pydantic==2.12.5
