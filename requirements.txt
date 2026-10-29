@@ -1,4 +1,4 @@
-# Runtime dependencies. Pin exact versions once TBD-C1 is decided (SEC-008).
+# Runtime dependencies, pinned exactly (TBD-C1, SEC-008). See docs/decisions/decision-log.md.
 flask==3.1.3
 gunicorn==22.0.0
 redis==5.0.8
