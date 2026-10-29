@@ -3,3 +3,4 @@ pylint
 coverage
 bandit
 pip-audit
+pyyaml==6.0.2
