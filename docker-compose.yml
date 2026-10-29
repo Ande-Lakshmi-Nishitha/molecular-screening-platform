@@ -1,3 +1,148 @@
-# Services: proxy, api, worker-ml, worker-dl, worker-qml, worker-agg, redis, postgres, db-backup.
-# Only the proxy publishes a port. Owner: Abheetha (story: Docker Compose stack).
-services: {}
+# MSP-11: full stack. Only the proxy publishes ports (80, 443).
+# First run: copy .env.example to .env and fill it in.
+
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: backend/Dockerfile
+  restart: unless-stopped
+  environment: &backend-env
+    DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    REDIS_URL: redis://redis:6379/0
+    HEALTH_CHECK_TIMEOUT: ${HEALTH_CHECK_TIMEOUT:-2}
+  networks: [backend]
+
+x-worker: &worker
+  <<: *backend
+  entrypoint: ["worker_entrypoint.sh"]
+  healthcheck:
+    test: ["CMD", "worker_healthcheck.sh"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 30s
+  depends_on:
+    redis: {condition: service_healthy}
+    postgres: {condition: service_healthy}
+
+services:
+  certs-init:            # one-shot: creates a self-signed cert if none exists
+    image: alpine/openssl
+    network_mode: none
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        [ -f /certs/server.crt ] || openssl req -x509 -nodes -newkey rsa:2048
+        -days 365 -subj /CN=localhost -keyout /certs/server.key -out /certs/server.crt;
+        chmod 644 /certs/server.key /certs/server.crt
+    volumes: [certs:/certs]
+
+  proxy:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/html:/usr/share/nginx/html:ro
+      - certs:/certs:ro
+    networks: [frontend]
+    depends_on:
+      certs-init: {condition: service_completed_successfully}
+      api: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "--no-check-certificate", "https://127.0.0.1/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  api:
+    <<: *backend
+    networks: [frontend, backend]
+    depends_on:
+      redis: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=4)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  worker-ml:
+    <<: *worker
+    environment: {<<: *backend-env, QUEUE: ml, CONCURRENCY: "1"}
+    volumes: ["./models:/models:ro"]
+
+  worker-dl:
+    <<: *worker
+    environment: {<<: *backend-env, QUEUE: dl, CONCURRENCY: "1"}
+    volumes: ["./models:/models:ro"]
+
+  worker-qml:
+    <<: *worker
+    environment: {<<: *backend-env, QUEUE: qml, CONCURRENCY: "${QML_CONCURRENCY:-1}"}
+
+  worker-agg:
+    <<: *worker
+    environment: {<<: *backend-env, QUEUE: agg, CONCURRENCY: "1"}
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redisdata:/data]
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    entrypoint: ["/scripts/backup.sh"]
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_KEEP: ${BACKUP_KEEP:-7}
+    volumes:
+      - ./deploy/backup:/scripts:ro
+      - backups:/backups
+    networks: [backend]
+    depends_on:
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/last_backup_ok"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+networks:
+  frontend:
+  backend:
+    internal: true       # no route to the internet or the host
+
+volumes:
+  pgdata:
+  redisdata:
+  backups:
+  certs:
