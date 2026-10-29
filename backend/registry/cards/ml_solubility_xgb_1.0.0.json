@@ -1,0 +1,148 @@
+{
+  "artifacts": [
+    {
+      "file": "ml_solubility_xgb_1.0.0.json",
+      "sha256": "6b3f48ef91f5b5a4e9451aca205190dbdb7b62ee359ccb233ee8643794751245",
+      "size_bytes": 3092093
+    },
+    {
+      "description": "packed Morgan bits of the training rows",
+      "file": "ml_solubility_train_fp_1.0.0.npy",
+      "kind": "reference_data",
+      "sha256": "c6938e3bf397539d1bba20d53518d060904332e8f252bd0a12be1e447d42696f",
+      "size_bytes": 1688704
+    },
+    {
+      "description": "descriptor min/p01/p99/max of the training rows",
+      "file": "ml_solubility_descriptor_ranges_1.0.0.json",
+      "kind": "reference_data",
+      "sha256": "425ec0a7a99ad4b43bcb935701a9465ea622dd8acdece0cf1f208c8c2d211e15",
+      "size_bytes": 22926
+    }
+  ],
+  "baseline": {
+    "algorithm": "sklearn.ensemble.RandomForestRegressor",
+    "exported": false,
+    "params": {
+      "max_features": 0.3,
+      "min_samples_leaf": 1,
+      "n_estimators": 300
+    }
+  },
+  "card_version": 1,
+  "data": {
+    "citation": "Sorkun et al., Scientific Data 6, 143 (2019), doi:10.1038/s41597-019-0151-1",
+    "licence_note": "The code repository is MIT licensed. The dataset's own licence is stated on its Harvard Dataverse page (doi:10.7910/DVN/OVHAW8) and must be checked there.",
+    "licence_verified": false,
+    "n_clean": 9424,
+    "n_dropped_missing_value": 0,
+    "n_dropped_unparsable": 3,
+    "n_duplicates_merged": 555,
+    "n_raw": 9982,
+    "origin": "https://raw.githubusercontent.com/mcsorkun/AqSolDB/master/results/data_curated.csv",
+    "raw_file": "aqsoldb.csv",
+    "raw_sha256": "363a42a4e4ea8e6039758146d34efdd95cde2da81c665316cacc1869e0a805ed",
+    "source": "AqSolDB"
+  },
+  "featuriser": {
+    "maccs_bits": 167,
+    "morgan_bits": 2048,
+    "n_descriptors": 216,
+    "n_features": 2431,
+    "signature": "72c6b6d1203118ed",
+    "version": "1"
+  },
+  "metrics": {
+    "baseline_test": {
+      "mae": 0.7966036284831309,
+      "n": 1886,
+      "r2": 0.7583789742191718,
+      "rmse": 1.1522046595949675
+    },
+    "test": {
+      "mae": 0.7539908377978637,
+      "n": 1886,
+      "r2": 0.7781075632909724,
+      "rmse": 1.104163826263124
+    }
+  },
+  "model": {
+    "algorithm": "xgboost.XGBRegressor",
+    "params": {
+      "colsample_bytree": 0.3,
+      "learning_rate": 0.05,
+      "max_depth": 6,
+      "min_child_weight": 2,
+      "n_estimators": 800,
+      "reg_lambda": 1.0,
+      "subsample": 0.8,
+      "tree_method": "hist"
+    },
+    "tuned": false
+  },
+  "name": "ml_solubility_xgb",
+  "qa_acc": {
+    "checks": [
+      {
+        "criterion": "scaffold-split RMSE within about 10% of the Random Forest baseline or better",
+        "id": "QA-ACC-ML-RMSE",
+        "measured": 1.104163826263124,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": "<= 1.267 (1.10 x baseline 1.152)"
+      },
+      {
+        "criterion": "empirical coverage of the 90% interval",
+        "id": "QA-ACC-ML-COVERAGE",
+        "measured": 0.8663838812301167,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": "0.85 to 0.95"
+      }
+    ],
+    "shortfalls": []
+  },
+  "requirements": [
+    "FR-010",
+    "FR-012",
+    "QA-ACC",
+    "BR-009"
+  ],
+  "seed": 42,
+  "software": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "python": "3.10.11",
+    "rdkit": "2026.09.1",
+    "scikit_learn": "1.7.2",
+    "xgboost": "3.2.0"
+  },
+  "split": {
+    "acyclic_molecules": "each its own group, spread across the parts",
+    "fractions": [
+      0.7,
+      0.1,
+      0.2
+    ],
+    "method": "scaffold_split_bemis_murcko",
+    "n_calibration": 942,
+    "n_test": 1886,
+    "n_train": 6596,
+    "seed": 42
+  },
+  "task": "solubility_logs",
+  "tier": "ml",
+  "trained_at": "2026-10-29T03:38:23Z",
+  "uncertainty": {
+    "alpha": 0.1,
+    "method": "split_conformal_absolute_residual",
+    "n_calibration": 942,
+    "n_test": 1886,
+    "offset": 1.5028066873550414,
+    "test_coverage": 0.8663838812301167
+  },
+  "unit": "log10(mol/L)",
+  "version": "1.0.0"
+}
