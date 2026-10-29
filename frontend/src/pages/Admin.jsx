@@ -1,1 +1,1 @@
-// pages/Admin.jsx - owner: Abheetha
+export default function Admin() { return <h1>Admin</h1>; }
