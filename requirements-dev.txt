@@ -3,3 +3,5 @@ pylint
 coverage
 bandit
 pip-audit
+scikit-learn
+pandas
