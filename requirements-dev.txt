@@ -3,4 +3,6 @@ pylint
 coverage
 bandit
 pip-audit
+scikit-learn
+pandas
 pyyaml==6.0.2

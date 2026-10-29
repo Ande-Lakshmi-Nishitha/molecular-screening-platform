@@ -1,0 +1,1139 @@
+{
+  "artifacts": [
+    {
+      "file": "ml_tox21_nr_ar_1.0.0.json",
+      "sha256": "bcd21f1cf17994409ad59185f105e491f39a0b4067074c9f78272fd198dedbf9",
+      "size_bytes": 647959,
+      "task": "NR-AR"
+    },
+    {
+      "file": "ml_tox21_nr_ar_lbd_1.0.0.json",
+      "sha256": "c6045533cbe6a3b9a84a8da782648fc085ed3ba29f4e63b30b52638bcdb65e1b",
+      "size_bytes": 619515,
+      "task": "NR-AR-LBD"
+    },
+    {
+      "file": "ml_tox21_nr_ahr_1.0.0.json",
+      "sha256": "d5143655919e2a03a89a5a6c14d29c461c2af3d5354032613508d4e516d291fc",
+      "size_bytes": 751838,
+      "task": "NR-AhR"
+    },
+    {
+      "file": "ml_tox21_nr_aromatase_1.0.0.json",
+      "sha256": "be9355ee1d24ba30d4bc03bd4c5a55c54a0a0970cede48804a13ecd293a4004d",
+      "size_bytes": 681349,
+      "task": "NR-Aromatase"
+    },
+    {
+      "file": "ml_tox21_nr_er_1.0.0.json",
+      "sha256": "cc2fa6575f8389075ad2fb54d5b29237093c89c7557ef299dc049291aebbace0",
+      "size_bytes": 730176,
+      "task": "NR-ER"
+    },
+    {
+      "file": "ml_tox21_nr_er_lbd_1.0.0.json",
+      "sha256": "a0f999aa16523187d60ad0e0acf2c3862cc2f0de39cd88954c359d56b22e7eb3",
+      "size_bytes": 703663,
+      "task": "NR-ER-LBD"
+    },
+    {
+      "file": "ml_tox21_nr_ppar_gamma_1.0.0.json",
+      "sha256": "1ea1d116e3d77b21a201fd5e522c8df5f5f795c9a0774a128bf1f2f9e57f38f5",
+      "size_bytes": 611863,
+      "task": "NR-PPAR-gamma"
+    },
+    {
+      "file": "ml_tox21_sr_are_1.0.0.json",
+      "sha256": "9b3a5cdc396547127ad2d8381d35ffe45b7ba53fe62a19a41dc5faac3e365697",
+      "size_bytes": 812252,
+      "task": "SR-ARE"
+    },
+    {
+      "file": "ml_tox21_sr_atad5_1.0.0.json",
+      "sha256": "69da47ce6c98e0b1af8dc24c3d9f32448a7c17249c91d334317ce2ada3599d21",
+      "size_bytes": 675540,
+      "task": "SR-ATAD5"
+    },
+    {
+      "file": "ml_tox21_sr_hse_1.0.0.json",
+      "sha256": "be946ffc9982247d67ba4d769643783d456d65256cd3d9d5e9bf7b3a05245561",
+      "size_bytes": 705632,
+      "task": "SR-HSE"
+    },
+    {
+      "file": "ml_tox21_sr_mmp_1.0.0.json",
+      "sha256": "84539017f883068a4f6110c07e5b46819d3573ec032aa0b09d052595e64966b8",
+      "size_bytes": 768863,
+      "task": "SR-MMP"
+    },
+    {
+      "file": "ml_tox21_sr_p53_1.0.0.json",
+      "sha256": "f0973cbd0fc90f1a55b00f1063743adcce34c7474057cd788b3cfbe49d7b6c90",
+      "size_bytes": 723671,
+      "task": "SR-p53"
+    },
+    {
+      "description": "packed Morgan bits of the training rows",
+      "file": "ml_tox21_train_fp_1.0.0.npy",
+      "kind": "reference_data",
+      "sha256": "38b7b6bfb4a0f87ad5710ca602cbc55fcc7a2e73b635e303587b76f7bfe23963",
+      "size_bytes": 1357440
+    },
+    {
+      "description": "descriptor min/p01/p99/max of the training rows",
+      "file": "ml_tox21_descriptor_ranges_1.0.0.json",
+      "kind": "reference_data",
+      "sha256": "265de1e7aebc2bd24327dfe48a92ca738d9cb369e586767b4383c83e82b31513",
+      "size_bytes": 22995
+    }
+  ],
+  "card_version": 1,
+  "data": {
+    "citation": "Tox21 Data Challenge 2014; Wu et al., Chem. Sci. 9, 513 (2018) for MoleculeNet",
+    "licence_note": "Check the licence on the MoleculeNet / DeepChem source page.",
+    "licence_verified": false,
+    "n_clean": 7575,
+    "n_conflicting_labels_set_missing": 158,
+    "n_dropped_unparsable": 10,
+    "n_duplicates_merged": 429,
+    "n_raw": 8014,
+    "origin": "https://raw.githubusercontent.com/deepchem/deepchem/master/datasets/tox21.csv.gz",
+    "raw_file": "tox21.csv.gz",
+    "raw_sha256": "48b34e4e59a2bae6f95734cd206c1869ab355f50a5e50bb7371a21f861d5e297",
+    "source": "Tox21 (Data Challenge 2014, MoleculeNet copy)"
+  },
+  "featuriser": {
+    "maccs_bits": 167,
+    "morgan_bits": 2048,
+    "n_descriptors": 216,
+    "n_features": 2431,
+    "signature": "72c6b6d1203118ed",
+    "version": "1"
+  },
+  "metrics": {
+    "mean_roc_auc_test": 0.8509233818825175
+  },
+  "model": {
+    "algorithm": "xgboost.XGBClassifier (one per assay)",
+    "params": {
+      "colsample_bytree": 0.3,
+      "eval_metric": "logloss",
+      "learning_rate": 0.05,
+      "max_depth": 5,
+      "min_child_weight": 1,
+      "n_estimators": 300,
+      "subsample": 0.8,
+      "tree_method": "hist"
+    },
+    "tuned": false
+  },
+  "name": "ml_tox21_xgb",
+  "qa_acc": {
+    "checks": [
+      {
+        "criterion": "mean ROC-AUC over the Tox21 assays, scaffold split",
+        "id": "QA-ACC-TOX21-AUC",
+        "measured": 0.8509233818825175,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": ">= 0.75"
+      }
+    ],
+    "shortfalls": []
+  },
+  "requirements": [
+    "FR-011",
+    "QA-ACC",
+    "BR-009"
+  ],
+  "seed": 42,
+  "software": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "python": "3.10.11",
+    "rdkit": "2026.09.1",
+    "scikit_learn": "1.7.2",
+    "xgboost": "3.2.0"
+  },
+  "split": {
+    "acyclic_molecules": "each its own group, spread across the parts",
+    "fractions": [
+      0.7,
+      0.1,
+      0.2
+    ],
+    "method": "scaffold_split_bemis_murcko",
+    "n_calibration": 757,
+    "n_test": 1516,
+    "n_train": 5302,
+    "seed": 42
+  },
+  "task": "tox21_assay_signals",
+  "tasks": {
+    "NR-AR": {
+      "calibration": {
+        "a": 0.5713373944647199,
+        "b": -0.9359670468813549,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_ar_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.03187658927777694,
+        "ece": 0.017641388664716456,
+        "n": 1375,
+        "n_positive": 77,
+        "roc_auc": 0.829217777599904
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.028414104958262604,
+        "ece": 0.01847134054230992,
+        "n": 1375,
+        "n_positive": 77,
+        "roc_auc": 0.829217777599904
+      },
+      "n_labelled": {
+        "calibration": 693,
+        "test": 1375,
+        "train": 4932
+      },
+      "reliability_curve": [
+        {
+          "count": 138,
+          "fraction_positive": 0.007246376811594203,
+          "mean_predicted": 0.004827692086858724
+        },
+        {
+          "count": 138,
+          "fraction_positive": 0.014492753623188406,
+          "mean_predicted": 0.007511592539100581
+        },
+        {
+          "count": 138,
+          "fraction_positive": 0.007246376811594203,
+          "mean_predicted": 0.009924238428155922
+        },
+        {
+          "count": 138,
+          "fraction_positive": 0.028985507246376812,
+          "mean_predicted": 0.012230828732623664
+        },
+        {
+          "count": 138,
+          "fraction_positive": 0.028985507246376812,
+          "mean_predicted": 0.014677095643589875
+        },
+        {
+          "count": 137,
+          "fraction_positive": 0.0364963503649635,
+          "mean_predicted": 0.017924201997913163
+        },
+        {
+          "count": 137,
+          "fraction_positive": 0.0364963503649635,
+          "mean_predicted": 0.02197173900076249
+        },
+        {
+          "count": 137,
+          "fraction_positive": 0.014598540145985401,
+          "mean_predicted": 0.0288114356578986
+        },
+        {
+          "count": 137,
+          "fraction_positive": 0.043795620437956206,
+          "mean_predicted": 0.04108690728328172
+        },
+        {
+          "count": 137,
+          "fraction_positive": 0.34306569343065696,
+          "mean_predicted": 0.25948202275404736
+        }
+      ],
+      "status": "trained"
+    },
+    "NR-AR-LBD": {
+      "calibration": {
+        "a": 0.5732470818384401,
+        "b": -0.9343873014942136,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_ar_lbd_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.023333489686577325,
+        "ece": 0.020606102784916886,
+        "n": 1273,
+        "n_positive": 62,
+        "roc_auc": 0.9292240483737779
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.019611554192344696,
+        "ece": 0.010605982910341108,
+        "n": 1273,
+        "n_positive": 62,
+        "roc_auc": 0.9292240483737779
+      },
+      "n_labelled": {
+        "calibration": 646,
+        "test": 1273,
+        "train": 4615
+      },
+      "reliability_curve": [
+        {
+          "count": 128,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.0024319497370670537
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.015625,
+          "mean_predicted": 0.003861323544278642
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.0078125,
+          "mean_predicted": 0.005227238752846345
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.007874015748031496,
+          "mean_predicted": 0.006614860987271872
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.008344725099648849
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.010584505074357747
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.013711209294220992
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.015748031496062992,
+          "mean_predicted": 0.018495194694210584
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.05511811023622047,
+          "mean_predicted": 0.02902796888311989
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.3858267716535433,
+          "mean_predicted": 0.25892890466301793
+        }
+      ],
+      "status": "trained"
+    },
+    "NR-AhR": {
+      "calibration": {
+        "a": 0.9868309874217652,
+        "b": 0.8862658653435818,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_ahr_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.0626039424700197,
+        "ece": 0.04104028666733057,
+        "n": 1247,
+        "n_positive": 127,
+        "roc_auc": 0.9164159167604049
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.05864272038509579,
+        "ece": 0.017949680567492368,
+        "n": 1247,
+        "n_positive": 127,
+        "roc_auc": 0.9164159167604049
+      },
+      "n_labelled": {
+        "calibration": 611,
+        "test": 1247,
+        "train": 4461
+      },
+      "reliability_curve": [
+        {
+          "count": 125,
+          "fraction_positive": 0.008,
+          "mean_predicted": 0.0031612824971746526
+        },
+        {
+          "count": 125,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.005591394772145057
+        },
+        {
+          "count": 125,
+          "fraction_positive": 0.008,
+          "mean_predicted": 0.008523102573727275
+        },
+        {
+          "count": 125,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.012983776159419655
+        },
+        {
+          "count": 125,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.02078690730579352
+        },
+        {
+          "count": 125,
+          "fraction_positive": 0.008,
+          "mean_predicted": 0.03636347413685168
+        },
+        {
+          "count": 125,
+          "fraction_positive": 0.048,
+          "mean_predicted": 0.07639780344368455
+        },
+        {
+          "count": 124,
+          "fraction_positive": 0.1693548387096774,
+          "mean_predicted": 0.15306680574340406
+        },
+        {
+          "count": 124,
+          "fraction_positive": 0.1935483870967742,
+          "mean_predicted": 0.32822687065445943
+        },
+        {
+          "count": 124,
+          "fraction_positive": 0.5887096774193549,
+          "mean_predicted": 0.748159213212778
+        }
+      ],
+      "status": "trained"
+    },
+    "NR-Aromatase": {
+      "calibration": {
+        "a": 0.6891098623354713,
+        "b": 0.32108067579526356,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_aromatase_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.048333875095488386,
+        "ece": 0.018683954280962742,
+        "n": 1084,
+        "n_positive": 68,
+        "roc_auc": 0.8268440250115795
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.048928077428471085,
+        "ece": 0.031480801996434236,
+        "n": 1084,
+        "n_positive": 68,
+        "roc_auc": 0.8268440250115795
+      },
+      "n_labelled": {
+        "calibration": 570,
+        "test": 1084,
+        "train": 3959
+      },
+      "reliability_curve": [
+        {
+          "count": 109,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.0035910139169179544
+        },
+        {
+          "count": 109,
+          "fraction_positive": 0.01834862385321101,
+          "mean_predicted": 0.00610817733391035
+        },
+        {
+          "count": 109,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.009157099926023279
+        },
+        {
+          "count": 109,
+          "fraction_positive": 0.01834862385321101,
+          "mean_predicted": 0.014756435011421343
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.027777777777777776,
+          "mean_predicted": 0.022662232643067288
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.018518518518518517,
+          "mean_predicted": 0.03229271342412121
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.06481481481481481,
+          "mean_predicted": 0.04810659506420618
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.10185185185185185,
+          "mean_predicted": 0.07551953077566272
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.09259259259259259,
+          "mean_predicted": 0.12382150609613979
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.28703703703703703,
+          "mean_predicted": 0.3525639980119731
+        }
+      ],
+      "status": "trained"
+    },
+    "NR-ER": {
+      "calibration": {
+        "a": 0.9244024700654991,
+        "b": 0.07958320513537272,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_er_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.08251544619340671,
+        "ece": 0.025730926033505394,
+        "n": 1160,
+        "n_positive": 159,
+        "roc_auc": 0.7908066775991305
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.08263981040084753,
+        "ece": 0.02892214118398663,
+        "n": 1160,
+        "n_positive": 159,
+        "roc_auc": 0.7908066775991305
+      },
+      "n_labelled": {
+        "calibration": 578,
+        "test": 1160,
+        "train": 4231
+      },
+      "reliability_curve": [
+        {
+          "count": 116,
+          "fraction_positive": 0.05172413793103448,
+          "mean_predicted": 0.019010124686638964
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.05172413793103448,
+          "mean_predicted": 0.02881518179398809
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.02586206896551724,
+          "mean_predicted": 0.03703825430065298
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.06896551724137931,
+          "mean_predicted": 0.045093723739088126
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.10344827586206896,
+          "mean_predicted": 0.057627080936200746
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.06896551724137931,
+          "mean_predicted": 0.07251616871056224
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.06896551724137931,
+          "mean_predicted": 0.09376012868595608
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.08620689655172414,
+          "mean_predicted": 0.13293520498256337
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.22413793103448276,
+          "mean_predicted": 0.22880784820315914
+        },
+        {
+          "count": 116,
+          "fraction_positive": 0.6206896551724138,
+          "mean_predicted": 0.5796160264953722
+        }
+      ],
+      "status": "trained"
+    },
+    "NR-ER-LBD": {
+      "calibration": {
+        "a": 0.7864205218496622,
+        "b": 0.10967627869204685,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_er_lbd_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.028670377194225275,
+        "ece": 0.012498874531650286,
+        "n": 1306,
+        "n_positive": 71,
+        "roc_auc": 0.861646803900325
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.028241226104878683,
+        "ece": 0.012634434238020768,
+        "n": 1306,
+        "n_positive": 71,
+        "roc_auc": 0.861646803900325
+      },
+      "n_labelled": {
+        "calibration": 675,
+        "test": 1306,
+        "train": 4744
+      },
+      "reliability_curve": [
+        {
+          "count": 131,
+          "fraction_positive": 0.015267175572519083,
+          "mean_predicted": 0.0029354511798335425
+        },
+        {
+          "count": 131,
+          "fraction_positive": 0.007633587786259542,
+          "mean_predicted": 0.005517922551653367
+        },
+        {
+          "count": 131,
+          "fraction_positive": 0.015267175572519083,
+          "mean_predicted": 0.007738900705278301
+        },
+        {
+          "count": 131,
+          "fraction_positive": 0.015267175572519083,
+          "mean_predicted": 0.010308227425323637
+        },
+        {
+          "count": 131,
+          "fraction_positive": 0.022900763358778626,
+          "mean_predicted": 0.013617168101270973
+        },
+        {
+          "count": 131,
+          "fraction_positive": 0.007633587786259542,
+          "mean_predicted": 0.018804596448500584
+        },
+        {
+          "count": 130,
+          "fraction_positive": 0.015384615384615385,
+          "mean_predicted": 0.02667289041004079
+        },
+        {
+          "count": 130,
+          "fraction_positive": 0.03076923076923077,
+          "mean_predicted": 0.039079377518530654
+        },
+        {
+          "count": 130,
+          "fraction_positive": 0.05384615384615385,
+          "mean_predicted": 0.06688278460847975
+        },
+        {
+          "count": 130,
+          "fraction_positive": 0.36153846153846153,
+          "mean_predicted": 0.4067152764535783
+        }
+      ],
+      "status": "trained"
+    },
+    "NR-PPAR-gamma": {
+      "calibration": {
+        "a": 0.7384911097123662,
+        "b": 0.38784645978984017,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_nr_ppar_gamma_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.021843562761547135,
+        "ece": 0.01085057754708181,
+        "n": 1225,
+        "n_positive": 33,
+        "roc_auc": 0.8484085824689851
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.02193440846138377,
+        "ece": 0.014125471359225136,
+        "n": 1225,
+        "n_positive": 33,
+        "roc_auc": 0.8484085824689851
+      },
+      "n_labelled": {
+        "calibration": 617,
+        "test": 1225,
+        "train": 4399
+      },
+      "reliability_curve": [
+        {
+          "count": 123,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.002667018842583878
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.004612553084079672
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.006723020933873621
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.016260162601626018,
+          "mean_predicted": 0.009100610150046854
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.008130081300813009,
+          "mean_predicted": 0.011935554007869387
+        },
+        {
+          "count": 122,
+          "fraction_positive": 0.00819672131147541,
+          "mean_predicted": 0.016211125860060727
+        },
+        {
+          "count": 122,
+          "fraction_positive": 0.01639344262295082,
+          "mean_predicted": 0.021668133649127463
+        },
+        {
+          "count": 122,
+          "fraction_positive": 0.040983606557377046,
+          "mean_predicted": 0.03156463369537182
+        },
+        {
+          "count": 122,
+          "fraction_positive": 0.040983606557377046,
+          "mean_predicted": 0.05136644754811552
+        },
+        {
+          "count": 122,
+          "fraction_positive": 0.13934426229508196,
+          "mean_predicted": 0.19003155351361706
+        }
+      ],
+      "status": "trained"
+    },
+    "SR-ARE": {
+      "calibration": {
+        "a": 0.8038922582831981,
+        "b": 0.3457148802362983,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_sr_are_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.11890582867613375,
+        "ece": 0.026719976142052543,
+        "n": 1117,
+        "n_positive": 206,
+        "roc_auc": 0.8139593746336576
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.12341731345145378,
+        "ece": 0.06538850171245542,
+        "n": 1117,
+        "n_positive": 206,
+        "roc_auc": 0.8139593746336576
+      },
+      "n_labelled": {
+        "calibration": 544,
+        "test": 1117,
+        "train": 3974
+      },
+      "reliability_curve": [
+        {
+          "count": 112,
+          "fraction_positive": 0.017857142857142856,
+          "mean_predicted": 0.023796464263520833
+        },
+        {
+          "count": 112,
+          "fraction_positive": 0.03571428571428571,
+          "mean_predicted": 0.03874015993519796
+        },
+        {
+          "count": 112,
+          "fraction_positive": 0.05357142857142857,
+          "mean_predicted": 0.055993055041574806
+        },
+        {
+          "count": 112,
+          "fraction_positive": 0.03571428571428571,
+          "mean_predicted": 0.07506496604980563
+        },
+        {
+          "count": 112,
+          "fraction_positive": 0.08035714285714286,
+          "mean_predicted": 0.09816668554122478
+        },
+        {
+          "count": 112,
+          "fraction_positive": 0.15178571428571427,
+          "mean_predicted": 0.1337537581323827
+        },
+        {
+          "count": 112,
+          "fraction_positive": 0.21428571428571427,
+          "mean_predicted": 0.17826273285100988
+        },
+        {
+          "count": 111,
+          "fraction_positive": 0.2702702702702703,
+          "mean_predicted": 0.25627177341433305
+        },
+        {
+          "count": 111,
+          "fraction_positive": 0.4144144144144144,
+          "mean_predicted": 0.4043644873472594
+        },
+        {
+          "count": 111,
+          "fraction_positive": 0.5765765765765766,
+          "mean_predicted": 0.6977064525427129
+        }
+      ],
+      "status": "trained"
+    },
+    "SR-ATAD5": {
+      "calibration": {
+        "a": 0.704302748929482,
+        "b": 0.33932609528833574,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_sr_atad5_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.04035703838822353,
+        "ece": 0.012909456764984152,
+        "n": 1339,
+        "n_positive": 59,
+        "roc_auc": 0.8197563559322034
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.041596017159070395,
+        "ece": 0.027879559461971647,
+        "n": 1339,
+        "n_positive": 59,
+        "roc_auc": 0.8197563559322034
+      },
+      "n_labelled": {
+        "calibration": 675,
+        "test": 1339,
+        "train": 4820
+      },
+      "reliability_curve": [
+        {
+          "count": 134,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.0031940552159507338
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.0056319409851577325
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.029850746268656716,
+          "mean_predicted": 0.008893633459755362
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.007462686567164179,
+          "mean_predicted": 0.012692073517050963
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.007462686567164179,
+          "mean_predicted": 0.01689516934684772
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.014925373134328358,
+          "mean_predicted": 0.02235582862005419
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.022388059701492536,
+          "mean_predicted": 0.030511111031005535
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.05970149253731343,
+          "mean_predicted": 0.04354523774034501
+        },
+        {
+          "count": 134,
+          "fraction_positive": 0.09701492537313433,
+          "mean_predicted": 0.07329397887651376
+        },
+        {
+          "count": 133,
+          "fraction_positive": 0.20300751879699247,
+          "mean_predicted": 0.2323490268468204
+        }
+      ],
+      "status": "trained"
+    },
+    "SR-HSE": {
+      "calibration": {
+        "a": 0.5990758578474031,
+        "b": -0.17252055864435342,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_sr_hse_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.04341737870108732,
+        "ece": 0.017417151614568166,
+        "n": 1233,
+        "n_positive": 66,
+        "roc_auc": 0.8066851029575965
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.043436960126955096,
+        "ece": 0.024170883815819232,
+        "n": 1233,
+        "n_positive": 66,
+        "roc_auc": 0.8066851029575965
+      },
+      "n_labelled": {
+        "calibration": 600,
+        "test": 1233,
+        "train": 4423
+      },
+      "reliability_curve": [
+        {
+          "count": 124,
+          "fraction_positive": 0.008064516129032258,
+          "mean_predicted": 0.014090650981346776
+        },
+        {
+          "count": 124,
+          "fraction_positive": 0.016129032258064516,
+          "mean_predicted": 0.020749397619275665
+        },
+        {
+          "count": 124,
+          "fraction_positive": 0.016129032258064516,
+          "mean_predicted": 0.026690242896786374
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.032520325203252036,
+          "mean_predicted": 0.03317328286661852
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.040979020547888725
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.016260162601626018,
+          "mean_predicted": 0.050738928825869355
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.032520325203252036,
+          "mean_predicted": 0.062250340211387
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.07317073170731707,
+          "mean_predicted": 0.08096668614475377
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.08130081300813008,
+          "mean_predicted": 0.1152255747053205
+        },
+        {
+          "count": 123,
+          "fraction_positive": 0.2601626016260163,
+          "mean_predicted": 0.25450788374831057
+        }
+      ],
+      "status": "trained"
+    },
+    "SR-MMP": {
+      "calibration": {
+        "a": 0.7446750608510317,
+        "b": 0.0242065666895141,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_sr_mmp_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.06582054631384726,
+        "ece": 0.02004133758998712,
+        "n": 1075,
+        "n_positive": 145,
+        "roc_auc": 0.9054282536151279
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.06522711107397133,
+        "ece": 0.020559476850998355,
+        "n": 1075,
+        "n_positive": 145,
+        "roc_auc": 0.9054282536151279
+      },
+      "n_labelled": {
+        "calibration": 565,
+        "test": 1075,
+        "train": 3971
+      },
+      "reliability_curve": [
+        {
+          "count": 108,
+          "fraction_positive": 0.009259259259259259,
+          "mean_predicted": 0.005076946480033449
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.027777777777777776,
+          "mean_predicted": 0.009117610417000807
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.009259259259259259,
+          "mean_predicted": 0.013916633512113861
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.020544159075920155
+        },
+        {
+          "count": 108,
+          "fraction_positive": 0.018518518518518517,
+          "mean_predicted": 0.03161471760726301
+        },
+        {
+          "count": 107,
+          "fraction_positive": 0.056074766355140186,
+          "mean_predicted": 0.05078959150265419
+        },
+        {
+          "count": 107,
+          "fraction_positive": 0.07476635514018691,
+          "mean_predicted": 0.08733967223087784
+        },
+        {
+          "count": 107,
+          "fraction_positive": 0.1308411214953271,
+          "mean_predicted": 0.1703785490371134
+        },
+        {
+          "count": 107,
+          "fraction_positive": 0.2897196261682243,
+          "mean_predicted": 0.3605459377858929
+        },
+        {
+          "count": 107,
+          "fraction_positive": 0.7383177570093458,
+          "mean_predicted": 0.7269017175229704
+        }
+      ],
+      "status": "trained"
+    },
+    "SR-p53": {
+      "calibration": {
+        "a": 0.788425865059087,
+        "b": 0.23659118534458912,
+        "method": "platt_logit"
+      },
+      "file": "ml_tox21_sr_p53_1.0.0.json",
+      "metrics_test": {
+        "brier": 0.05377921119791171,
+        "ece": 0.010600718170817088,
+        "n": 1276,
+        "n_positive": 87,
+        "roc_auc": 0.8626876637375173
+      },
+      "metrics_test_uncalibrated": {
+        "brier": 0.05537448695655758,
+        "ece": 0.026512172671864166,
+        "n": 1276,
+        "n_positive": 87,
+        "roc_auc": 0.8626876637375173
+      },
+      "n_labelled": {
+        "calibration": 644,
+        "test": 1276,
+        "train": 4634
+      },
+      "reliability_curve": [
+        {
+          "count": 128,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.003440712034779354
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.0,
+          "mean_predicted": 0.006823227236660954
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.0078125,
+          "mean_predicted": 0.010485048170412504
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.015625,
+          "mean_predicted": 0.015829602507338836
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.0234375,
+          "mean_predicted": 0.023335619354546498
+        },
+        {
+          "count": 128,
+          "fraction_positive": 0.015625,
+          "mean_predicted": 0.0331102928488988
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.047244094488188976,
+          "mean_predicted": 0.04808688307354311
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.07086614173228346,
+          "mean_predicted": 0.07585926287769781
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.1732283464566929,
+          "mean_predicted": 0.13699153444661272
+        },
+        {
+          "count": 127,
+          "fraction_positive": 0.33070866141732286,
+          "mean_predicted": 0.36417372444174173
+        }
+      ],
+      "status": "trained"
+    }
+  },
+  "tier": "ml",
+  "trained_at": "2026-10-29T03:47:14Z",
+  "unit": "probability (0 to 1), calibrated",
+  "version": "1.0.0"
+}
