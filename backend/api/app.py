@@ -9,6 +9,7 @@ from flask import Flask, request
 
 from backend.api.errors import register_error_handling
 from backend.api.health import health_bp
+from backend.api.molecules.validate_routes import validate_bp
 from backend.api.openapi import openapi_bp
 from backend.core.logging_filter import install_log_filter
 
@@ -20,6 +21,7 @@ def register_blueprints(app):
     """Register every API blueprint. One line per blueprint."""
     app.register_blueprint(health_bp)
     app.register_blueprint(openapi_bp)
+    app.register_blueprint(validate_bp)
 
 
 def _install_cors(app):
