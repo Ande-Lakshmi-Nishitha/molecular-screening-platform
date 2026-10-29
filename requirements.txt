@@ -3,3 +3,6 @@ SQLAlchemy==2.0.36
 alembic==1.13.3
 psycopg2-binary==2.9.10
 PyYAML==6.0.2
+Flask==3.0.3
+argon2-cffi==23.1.0
+redis==5.0.8
