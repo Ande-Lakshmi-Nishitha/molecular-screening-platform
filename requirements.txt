@@ -11,4 +11,9 @@ Flask==3.1.3
 argon2-cffi==23.1.0
 redis==5.0.8
 rdkit==2026.9.1
+<<<<<<< HEAD
 PyJWT==2.15.0
+=======
+xgboost==3.2.0
+numpy
+>>>>>>> 0afad42c6d6b766cb6b933418662eccac66fbf62
