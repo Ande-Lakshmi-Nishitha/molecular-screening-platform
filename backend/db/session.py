@@ -1,11 +1,3 @@
-"""engine and session handling.
-
-Owner: Ayushi. Requirements: QA-REL.
-"""
-"""Engine and session handling.
-
-Owner: Ayushi. Requirements: QA-REL.
-"""
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine
@@ -40,3 +32,4 @@ def session_scope():
         raise
     finally:
         session.close()
+    

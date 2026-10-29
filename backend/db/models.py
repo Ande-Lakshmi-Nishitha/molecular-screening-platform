@@ -1,11 +1,3 @@
-"""SQLAlchemy models: users, molecules, jobs, job_tasks, results, models, audit_log.
-
-Owner: Ayushi. Requirements: FR-035, SRS B.5.
-"""
-"""SQLAlchemy models: users, molecules, jobs, job_tasks, results, models, audit_log.
-
-Owner: Ayushi. Requirements: FR-035, SRS B.5.
-"""
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
@@ -114,3 +106,4 @@ class ModelRecord(Base):
     data_provenance: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    

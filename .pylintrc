@@ -1,0 +1,8 @@
+[MAIN]
+ignore-paths=^backend[\\/]db[\\/]migrations[\\/].*$
+
+[FORMAT]
+max-line-length=130
+
+[MESSAGES CONTROL]
+disable=too-few-public-methods,too-many-instance-attributes,global-statement

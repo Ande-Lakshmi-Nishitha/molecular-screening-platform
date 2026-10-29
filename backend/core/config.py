@@ -1,12 +1,3 @@
-"""settings from environment (all open TBD-C12 values).
-
-Owner: Ayushi. Requirements: SEC-004, SEC-003.
-"""
-"""Settings from environment (all open TBD-C12 values).
-
-Owner: Ayushi. Requirements: SEC-004, SEC-003.
-Defaults below are PROVISIONAL until TBD-C8/C9/C10/C12 are decided.
-"""
 import os
 from dataclasses import dataclass
 from pathlib import Path
