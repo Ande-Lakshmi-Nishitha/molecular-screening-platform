@@ -1,4 +1,4 @@
-"""All disclaimer, limitation and label wording in one file (minimal first version, MSP-23).
+"""All disclaimer, limitation and label wording in one file (minimal first version, MSP-23; DL added in MSP-26).
 
 Owner: Nishitha. Requirements: NFR-007..011, BR-006, BR-007.
 MSP-32 completes this file (QML and DL wording, the schema test over every tier).
@@ -39,6 +39,30 @@ LIMITATION_TOX21 = (
     "assessment. Tox21 does not cover hERG, hepatotoxicity or mutagenicity. "
     "A low value is not evidence that a molecule is free of toxicity."
 )
+
+
+LIMITATION_ACTIVITY = (
+    "Predicted by an ensemble of five graph neural networks trained on public ChEMBL binding "
+    "data for this target. The value is an estimate, not a measurement, and says nothing about "
+    "activity in cells, animals or patients. The standard deviation shows how much the five "
+    "models disagree; it is not the real error and can be small for a wrong prediction, "
+    "especially for molecules unlike the training data."
+)
+
+LIMITATION_BASELINE = (
+    "A simpler gradient-boosted tree model on fingerprints and descriptors, trained on the same "
+    "data. It is shown only for comparison with the network ensemble, and has the same limits."
+)
+
+
+def activity_labels(unit: str, model_version: str) -> Dict[str, str]:
+    """Label fields for the DL activity block (the unit is the target's own: pIC50 or pKi)."""
+    return {"unit": unit, "limitation": LIMITATION_ACTIVITY, "model_version": model_version}
+
+
+def baseline_labels(unit: str, model_version: str) -> Dict[str, str]:
+    """Label fields for the DL baseline block."""
+    return {"unit": unit, "limitation": LIMITATION_BASELINE, "model_version": model_version}
 
 
 def solubility_labels(model_version: str) -> Dict[str, str]:

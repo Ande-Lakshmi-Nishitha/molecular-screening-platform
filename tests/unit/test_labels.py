@@ -17,6 +17,18 @@ class LabelTests(unittest.TestCase):
                 self.assertEqual(labels.missing_labels(block), [])
                 self.assertEqual(block["model_version"], "1.0.0")
 
+    def test_dl_blocks_carry_the_targets_own_unit_limitation_and_model_version(self):
+        for unit in ("pIC50", "pKi"):
+            for block in (labels.activity_labels(unit, "dl_x_gnn@1.0.0"), labels.baseline_labels(unit, "dl_x_gnn@1.0.0")):
+                with self.subTest(unit=unit):
+                    self.assertEqual(labels.missing_labels(block), [])
+                    self.assertEqual(block["unit"], unit)
+                    self.assertEqual(block["model_version"], "dl_x_gnn@1.0.0")
+
+    def test_the_dl_limitation_says_the_sd_is_not_the_real_error(self):
+        self.assertIn("not the real error", labels.LIMITATION_ACTIVITY)
+        self.assertIn("not a measurement", labels.LIMITATION_ACTIVITY)
+
     def test_br006_the_tox21_block_is_labelled_assay_signal(self):
         self.assertEqual(labels.ASSAY_SIGNAL, "assay_signal")
         self.assertEqual(labels.tox21_labels("1.0.0")["label"], "assay_signal")
@@ -26,7 +38,8 @@ class LabelTests(unittest.TestCase):
             self.assertIn(word, labels.LIMITATION_TOX21)
 
     def test_nfr011_no_sentence_calls_a_molecule_safe_or_effective(self):
-        texts = [labels.DISCLAIMER, labels.LIMITATION_SOLUBILITY, labels.LIMITATION_TOX21]
+        texts = [labels.DISCLAIMER, labels.LIMITATION_SOLUBILITY, labels.LIMITATION_TOX21,
+                 labels.LIMITATION_ACTIVITY, labels.LIMITATION_BASELINE]
         for text in texts:
             for word in FORBIDDEN:
                 self.assertNotIn(word, text.lower())
