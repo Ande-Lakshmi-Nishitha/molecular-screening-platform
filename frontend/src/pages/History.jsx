@@ -1,1 +1,1 @@
-// pages/History.jsx - owner: Abheetha
+export default function History() { return <h1>History</h1>; }
