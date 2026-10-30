@@ -42,7 +42,7 @@ export async function request(path, { method = "GET", body, auth = true } = {}) 
   if (!res.ok) {
     // 401 on a protected call = expired/invalid session. Login/register use auth:false.
     if (res.status === 401 && auth) onUnauthorized();
-    throw normalizeError(res.status, data);
+    throw normalizeError(res.status, data, res.headers.get("X-Request-ID"));
   }
   return data;
 }
@@ -50,6 +50,10 @@ export async function request(path, { method = "GET", body, auth = true } = {}) 
 export const api = {
   login: (email, password) => request("/auth/login", { method: "POST", body: { email, password }, auth: false }),
   register: (email, password) => request("/auth/register", { method: "POST", body: { email, password }, auth: false }),
+  // Status and partial results of one of the caller's own jobs.
+  getJob: (id) => request(`/jobs/${encodeURIComponent(id)}`),
+  // Cancel a job; the response is the updated job, same shape as getJob.
+  cancelJob: (id) => request(`/jobs/${encodeURIComponent(id)}`, { method: "DELETE" }),
 };
 
 export { ApiError };

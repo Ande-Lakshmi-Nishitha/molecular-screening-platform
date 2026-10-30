@@ -7,6 +7,9 @@ export default function ErrorBanner({ error }) {
       {error.code && error.code !== "LOGIN_FAILED" && (
         <div style={{ fontSize: 12, marginTop: 4 }}>Code: {error.code}</div>
       )}
+      {error.requestId && (
+        <div style={{ fontSize: 12, marginTop: 2 }}>Request ID: {error.requestId}</div>
+      )}
       {error.details?.length > 0 && (
         <ul style={{ margin: "6px 0 0 18px" }}>
           {error.details.map((d, i) => (

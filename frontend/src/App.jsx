@@ -25,6 +25,7 @@ export default function App() {
             <Route path="/submit" element={<Submit />} />
             <Route path="/search" element={<Search />} />
             <Route path="/jobs" element={<JobTracker />} />
+            <Route path="/jobs/:id" element={<JobTracker />} />
             <Route path="/results" element={<Results />} />
             <Route path="/history" element={<History />} />
             <Route path="/compare" element={<Compare />} />
