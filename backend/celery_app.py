@@ -34,7 +34,7 @@ def make_celery(settings=None):
 
 
 celery_app = make_celery()  # pylint: disable=invalid-name
-
+app = celery_app  # the worker entrypoint looks for an attribute named `app`
 
 def tier_limits(settings, tier):
     """Soft and hard time limits for a tier, read from config (TBD-C12)."""
