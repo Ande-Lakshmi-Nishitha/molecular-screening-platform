@@ -1,6 +1,8 @@
 """Submit route: validate, standardise, create job and task rows, queue the tiers.
 
 Owner: Ayushi. Requirements: FR-029, FR-030, FR-035, SEC-002.
+The molecule is checked by validate_smiles(), the same code behind
+POST /api/molecules/validate (MSP-20), so the two routes always agree.
 A task row is committed before its message is sent, so a worker always finds its row.
 """
 import uuid
@@ -17,8 +19,11 @@ from backend.core.config import Settings, load_targets, load_triage_rules
 from backend.db.models import TIERS
 from backend.db.repositories import jobs
 from backend.db.session import session_scope
-from backend.services.molecule.eligibility import tier_eligibility
-from backend.services.molecule.standardise import MoleculeError, standardise_smiles
+from backend.services.molecule.eligibility import TierDecision
+from backend.services.molecule.errors import http_status_for
+from backend.services.molecule.limits import MoleculeLimits
+from backend.services.molecule.standardise import MoleculeError
+from backend.services.molecule.validate import validate_smiles
 
 submit_bp = Blueprint("submit", __name__, url_prefix="/api/molecules")
 
@@ -35,6 +40,7 @@ class SubmitError(Exception):
 
 
 def _read_request(settings):
+    """Check the request shape. Length and structure are checked by validate_smiles()."""
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         raise SubmitError("Request body must be JSON.")
@@ -42,9 +48,6 @@ def _read_request(settings):
     if not isinstance(smiles, str) or not smiles.strip():
         raise SubmitError("A SMILES string is required.", {"field": "smiles"})
     smiles = smiles.strip()
-    if len(smiles) > settings.max_smiles_len:
-        raise SubmitError(f"SMILES is longer than {settings.max_smiles_len} characters.",
-                          {"field": "smiles"})
     target_id = data.get("target_id")
     if target_id is not None:
         known = {t.get("id") for t in (load_targets(settings) or {}).get("targets") or []}
@@ -57,12 +60,14 @@ def _read_request(settings):
     return smiles, target_id, tiers
 
 
-def _molecule_and_tiers(smiles, target_id, requested):
+def _molecule_and_tiers(smiles, target_id, requested, settings):
     try:
-        std = standardise_smiles(smiles)
+        std = validate_smiles(smiles, target_id, MoleculeLimits.from_env(settings))
     except MoleculeError as err:
-        raise SubmitError(str(err), {"field": "smiles"}, code=getattr(err, "code", "VALIDATION_ERROR")) from err
-    decisions = tier_eligibility(std.mol, target_id)
+        # 413 INPUT_TOO_LARGE, 422 VALIDATION_ERROR or 422 PARSE_TIMEOUT (SAD section 9.1)
+        raise SubmitError(err.message, {"field": "smiles"}, code=err.code,
+                          status=http_status_for(err)) from err
+    decisions = {tier: TierDecision(**decision) for tier, decision in std.tiers.items()}
     run_tiers = [tier for tier in TIERS if requested is None or tier in requested]
     unavailable = {tier: decisions[tier].skip_reason for tier in run_tiers
                    if requested is not None and not decisions[tier].eligible}
@@ -93,7 +98,7 @@ def submit():
     settings = Settings.from_env()
     try:
         smiles, target_id, requested = _read_request(settings)
-        std, decisions = _molecule_and_tiers(smiles, target_id, requested)
+        std, decisions = _molecule_and_tiers(smiles, target_id, requested, settings)
     except SubmitError as err:
         return error_response(err.code, err.message, err.status, err.details)
 
@@ -113,7 +118,7 @@ def submit():
         return error_response("SERVICE_UNAVAILABLE", "Could not queue the job. Try again.", 503)
     return jsonify({
         "job_id": str(job_id),
-        "molecule": std.to_dict(),
+        "molecule": {key: value for key, value in std.to_dict().items() if key != "tiers"},
         "tasks": [{"id": str(task_id), "tier": tier, "status": status, "skip_reason": skip}
                   for task_id, tier, status, skip in rows],
     }), 202
