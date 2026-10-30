@@ -49,9 +49,9 @@ def card_path(name: str, version: str = "", cards_dir=None) -> Path:
     return Path(cards_dir or CARDS_DIR) / f"{name}_{version or model_version()}.json"
 
 
-def models_folder(models_dir=None) -> Path:
-    """The folder holding the ML model files."""
-    return Path(models_dir or Settings.from_env().models_dir) / MODELS_SUBFOLDER
+def models_folder(models_dir=None, subfolder: str = MODELS_SUBFOLDER) -> Path:
+    """The folder holding a tier's model files (ml/ by default; the DL worker passes "dl")."""
+    return Path(models_dir or Settings.from_env().models_dir) / subfolder
 
 
 @dataclass(frozen=True)
@@ -78,8 +78,8 @@ def take_snapshot(paths) -> Tuple[Tuple[str, int, int], ...]:
     return tuple(entries)
 
 
-def read_card(path, expected_task: str) -> dict:
-    """Read an ML card and check the fields serving depends on."""
+def read_card(path, expected_task: str, tier: str = ML_TIER) -> dict:
+    """Read a model card (ML by default) and check the fields serving depends on."""
     try:
         with open(path, encoding="utf-8") as handle:
             card = json.load(handle)
@@ -87,8 +87,8 @@ def read_card(path, expected_task: str) -> dict:
         raise ModelLoadError("Model card could not be read.") from exc
     if not isinstance(card, dict):
         raise ModelLoadError("Model card must be a JSON object.")
-    if card.get("tier") != ML_TIER or card.get("task") != expected_task:
-        raise ModelLoadError("Model card is not the expected ML card.")
+    if card.get("tier") != tier or card.get("task") != expected_task:
+        raise ModelLoadError("Model card is not the expected card.")
     for field in ("name", "version"):
         if not isinstance(card.get(field), str) or not card[field]:
             raise ModelLoadError(f"Model card is missing: {field}")

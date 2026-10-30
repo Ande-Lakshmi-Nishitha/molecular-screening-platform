@@ -275,7 +275,7 @@ class CeleryWiringTests(unittest.TestCase):
         self.assertEqual(tasks.ml_run.name, "msp.ml.run")
 
     def test_the_entry_point_takes_one_id_and_returns_the_outcome(self):
-        with patch.object(tasks, "run_ml_task", return_value="done") as run:
+        with patch.object(tasks, "run_ml_task_with_delay", return_value=("done", 0)) as run:
             self.assertEqual(tasks.ml_run.run("abc"), "done")
         run.assert_called_once_with("abc")
 

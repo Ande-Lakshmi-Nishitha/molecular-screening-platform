@@ -25,9 +25,13 @@ def retry_delay(attempt, base=RETRY_BASE_S, cap=RETRY_CAP_S):
 
 
 def decide_failure(exc, attempts, max_retries):
-    """Return (action, reason, delay): timeouts fail with TIMEOUT, transient errors retry, the rest fail."""
+    """Return (action, reason, delay): timeouts fail with TIMEOUT, an error with its own reason fails with it,
+    transient errors retry, the rest fail."""
     if isinstance(exc, (SoftTimeLimitExceeded, TimeLimitExceeded)):
         return "fail", "TIMEOUT", 0
+    reason = getattr(exc, "reason", None)  # a failure that names its own reason (for example MODEL_UNAVAILABLE)
+    if isinstance(reason, str) and reason:
+        return "fail", reason, 0
     if isinstance(exc, TRANSIENT_ERRORS) and attempts <= max_retries:
         return "retry", None, retry_delay(attempts)
     return "fail", "COMPUTE_ERROR", 0
