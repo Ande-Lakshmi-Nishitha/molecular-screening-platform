@@ -16,7 +16,7 @@ class Body(StrictModel):
 
 
 def make_app(config=None):
-    app = create_app(config)
+    app = create_app({"ACCESS_CONTROL": False, **(config or {})})
 
     @app.post("/test/body")
     def body_route():
