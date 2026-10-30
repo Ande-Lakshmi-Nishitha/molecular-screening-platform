@@ -1,13 +1,22 @@
-"""Job status and partial results (FR-031, FR-032, FR-036).
+"""Job status and partial results (FR-031, FR-032, FR-036, SEC-002).
 
 Owner: Ayushi. Results keep model_version and params_hash, and the job keeps rules_version,
 so every stored answer can be traced to the versions that produced it.
 """
-from sqlalchemy import select
-
-from backend.db.models import TIERS, Job, JobTask, Result
+from backend.db.models import TIERS
+from backend.db.repositories import jobs
 
 ACTIVE = ("queued", "running")
+
+
+class JobAccessError(Exception):
+    """The caller may not see this job (403) or it does not exist (404)."""
+
+    def __init__(self, code, message, status):
+        super().__init__(message)
+        self.code = code
+        self.message = message
+        self.status = status
 
 
 def overall_status(task_statuses, cancelled=False):
@@ -38,16 +47,15 @@ def _task_body(task, result):
 
 
 def build_status(session, job_id, user_id):
-    """Return the status body, or None if the job does not exist or belongs to someone else."""
-    job = session.get(Job, job_id)
-    if job is None or job.user_id != user_id:
-        return None
-    tasks = session.execute(select(JobTask).where(JobTask.job_id == job.id)).scalars().all()
+    """Return the status body. Raises JobAccessError: 403 for someone else's job, 404 if unknown."""
+    job = jobs.get_job_owned(session, job_id, user_id)
+    if job is None:
+        if jobs.job_exists(session, job_id):
+            raise JobAccessError("FORBIDDEN", "You do not have access to this job.", 403)
+        raise JobAccessError("JOB_NOT_FOUND", "Job not found.", 404)
+    tasks = jobs.get_tasks_owned(session, job.id, user_id)
     tasks.sort(key=lambda task: TIERS.index(task.tier) if task.tier in TIERS else len(TIERS))
-    results = {}
-    if tasks:
-        rows = session.execute(select(Result).where(Result.job_task_id.in_([t.id for t in tasks])))
-        results = {row.job_task_id: row for row in rows.scalars()}
+    results = jobs.get_results_owned(session, [task.id for task in tasks], user_id)
     return {
         "job_id": str(job.id),
         "status": overall_status([t.status for t in tasks], job.cancelled_at is not None),

@@ -126,11 +126,12 @@ class JobStatusTests(unittest.TestCase):  # FR-031, FR-032, FR-036, SEC-002
         self.assertEqual(body["tasks"][0]["result"]["model_version"], "1.0")
         self.assertEqual(body["tasks"][0]["result"]["params_hash"], "abc123")
 
-    def test_another_users_job_is_a_404(self):
+    def test_another_users_job_is_403_and_unknown_is_404(self):
         resp = self.get(self.job_id, token="other")
-        self.assertEqual(resp.status_code, 404)
-        self.assertEqual(resp.get_json()["error"]["code"], "JOB_NOT_FOUND")
-
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.get_json()["error"]["code"], "FORBIDDEN")
+        self.assertEqual(self.get(uuid.uuid4()).status_code, 404)
+        
     def test_unknown_and_malformed_ids_are_404(self):
         self.assertEqual(self.get(uuid.uuid4()).status_code, 404)
         self.assertEqual(self.get("not-a-uuid").status_code, 404)
@@ -141,4 +142,3 @@ class JobStatusTests(unittest.TestCase):  # FR-031, FR-032, FR-036, SEC-002
 
 if __name__ == "__main__":
     unittest.main()
-    

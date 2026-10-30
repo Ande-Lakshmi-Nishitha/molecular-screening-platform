@@ -1,12 +1,13 @@
-"""Job queries: molecules, jobs and task rows (FR-035, FR-058..060).
+"""Job queries: molecules, jobs and task rows (FR-035, FR-058..060, SEC-002).
 
-Owner: Ayushi. Workers add functions here only after agreeing them with Ayushi.
+Owner: Ayushi. Every read of jobs, tasks and results takes the caller's user id and filters on
+it. Only workers write results. Workers add functions here only after agreeing them.
 """
 from datetime import datetime, timezone
 
 from sqlalchemy import select
 
-from backend.db.models import Job, JobTask, Molecule
+from backend.db.models import Job, JobTask, Molecule, Result
 
 
 def _find_molecule(session, inchikey):
@@ -60,6 +61,29 @@ def mark_tasks_failed(session, task_ids, error):
         task.finished_at = now
 
 
-def get_job(session, job_id):
-    """Return the job row or None."""
-    return session.get(Job, job_id)
+def get_job_owned(session, job_id, user_id):
+    """The job if it belongs to this user, otherwise None."""
+    query = select(Job).where(Job.id == job_id, Job.user_id == user_id)
+    return session.execute(query).scalar_one_or_none()
+
+
+def job_exists(session, job_id):
+    """True if any job has this id (used only to tell 403 from 404, never to return data)."""
+    return session.execute(select(Job.id).where(Job.id == job_id)).first() is not None
+
+
+def get_tasks_owned(session, job_id, user_id):
+    """The tasks of this user's job."""
+    query = (select(JobTask).join(Job, Job.id == JobTask.job_id)
+             .where(JobTask.job_id == job_id, Job.user_id == user_id))
+    return session.execute(query).scalars().all()
+
+
+def get_results_owned(session, task_ids, user_id):
+    """Results of this user's tasks, keyed by task id."""
+    if not task_ids:
+        return {}
+    query = (select(Result).join(JobTask, JobTask.id == Result.job_task_id)
+             .join(Job, Job.id == JobTask.job_id)
+             .where(Result.job_task_id.in_(task_ids), Job.user_id == user_id))
+    return {row.job_task_id: row for row in session.execute(query).scalars()}
