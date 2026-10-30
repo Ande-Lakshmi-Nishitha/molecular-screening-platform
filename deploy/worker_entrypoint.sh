@@ -1,6 +1,8 @@
 #!/bin/sh
-# Starts a Celery worker for one queue. If backend/celery_app.py does not
-# define a Celery app yet (MSP-29), it idles as a placeholder instead.
+# Starts a Celery worker for one queue. It imports the queue's task module
+# (backend.workers.<queue>.tasks) so the task registers; without that import the
+# worker starts but cannot run msp.<queue>.run.
+# If backend/celery_app.py does not define a Celery app, it idles as a placeholder.
 set -eu
 : "${QUEUE:?QUEUE must be set (ml, dl, qml or agg)}"
 CONCURRENCY="${CONCURRENCY:-1}"
@@ -14,6 +16,7 @@ sys.exit(0 if (hasattr(m, "app") or hasattr(m, "celery")) else 1)'
 
 if python -c "$HAS_APP"; then
     exec celery -A backend.celery_app worker -Q "$QUEUE" -c "$CONCURRENCY" \
+        -I "backend.workers.${QUEUE}.tasks" \
         --prefetch-multiplier=1 -Ofair --hostname "${QUEUE}@%h"
 fi
 
