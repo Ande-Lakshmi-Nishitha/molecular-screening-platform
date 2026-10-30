@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 from contextlib import contextmanager
 from types import SimpleNamespace
@@ -14,10 +15,18 @@ from backend.api.auth.sessions import SessionStore, issue_token
 from backend.api.molecules.submit_routes import submit_bp
 from backend.core.config import Settings
 from backend.db.models import AuditLog, Base, Job, JobTask, Molecule, User
+from backend.services.molecule import parse_process
+from backend.services.molecule.validate import validate_smiles
 
 SECRET = "unit-test-secret-unit-test-secret-1234"
 ETHANOL = "CCO"
 ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
+
+
+def slow_compute(*_args):
+    """Stands in for compute_validation to force the time limit (module level for spawn)."""
+    time.sleep(60)
+    return {}
 
 
 class FakeRedis:
@@ -131,11 +140,41 @@ class SubmitTests(unittest.TestCase):  # FR-029, FR-030, FR-035, SEC-002
         self.assertEqual(self.count(Job), 0)
         self.enqueue.assert_not_called()
 
-    def test_oversized_smiles_is_refused_by_config_limit(self):
+    def test_oversized_smiles_is_413_by_config_limit(self):  # FR-053, SAD 9.1
         with patch.dict(os.environ, {"MAX_SMILES_LEN": "10"}):
             resp = self.submit({"smiles": "C" * 11})
-        self.assertEqual(resp.status_code, 422)
+        self.assertEqual(resp.status_code, 413)
+        self.assertEqual(resp.get_json()["error"]["code"], "INPUT_TOO_LARGE")
+        self.assertNotIn("C" * 11, resp.get_data(as_text=True))
         self.assertEqual(self.count(Job), 0)
+        self.enqueue.assert_not_called()
+
+    def test_smiles_at_the_limit_is_accepted(self):
+        with patch.dict(os.environ, {"MAX_SMILES_LEN": "10"}):
+            resp = self.submit({"smiles": "C" * 10})
+        self.assertEqual(resp.status_code, 202)
+
+    def test_slow_parse_gives_parse_timeout_and_creates_nothing(self):  # FR-053
+        started = time.monotonic()
+        with patch.dict(os.environ, {"PARSE_TIMEOUT_S": "1"}), \
+                patch.object(parse_process, "compute_validation", slow_compute):
+            resp = self.submit({"smiles": ETHANOL})
+        self.assertLess(time.monotonic() - started, 15)
+        self.assertEqual(resp.status_code, 422)
+        self.assertEqual(resp.get_json()["error"]["code"], "PARSE_TIMEOUT")
+        self.assertEqual(self.count(Job), 0)
+        self.enqueue.assert_not_called()
+
+    def test_submit_and_validate_use_the_same_result(self):  # MSP-20 shared validation
+        for smiles in (ETHANOL, ASPIRIN, "CC(=O)[O-].[Na+]"):
+            with self.subTest(smiles=smiles):
+                expected = validate_smiles(smiles).to_dict()
+                body = self.submit({"smiles": smiles}).get_json()
+                self.assertEqual(body["molecule"],
+                                 {k: v for k, v in expected.items() if k != "tiers"})
+                skips = {t["tier"]: t["skip_reason"] for t in body["tasks"]}
+                self.assertEqual(skips, {tier: d["skip_reason"]
+                                         for tier, d in expected["tiers"].items()})
 
     def test_missing_smiles_and_non_json_give_422(self):
         self.assertEqual(self.submit({}).status_code, 422)
