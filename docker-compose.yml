@@ -70,12 +70,12 @@ services:
 
   worker-ml:
     <<: *worker
-    environment: {<<: *backend-env, QUEUE: ml, CONCURRENCY: "1"}
+    environment: {<<: *backend-env, QUEUE: ml, CONCURRENCY: "1", MODELS_DIR: /models}
     volumes: ["./models:/models:ro"]
 
   worker-dl:
     <<: *worker
-    environment: {<<: *backend-env, QUEUE: dl, CONCURRENCY: "1"}
+    environment: {<<: *backend-env, QUEUE: dl, CONCURRENCY: "1", MODELS_DIR: /models}
     volumes: ["./models:/models:ro"]
 
   worker-qml:
