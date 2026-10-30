@@ -1,0 +1,5 @@
+# Extra runtime dependency for the DL tier (MSP-25 training, MSP-26 worker). Pinned exactly (TBD-C1, SEC-008).
+# Kept apart from requirements.txt because it is large (the CPU build for Windows is about 110 MB) and only the
+# DL worker image, the training scripts and CI need it. Install with: pip install -r requirements-dl.txt
+# scipy is needed by training/train_gnn.py (Spearman); it is already installed with xgboost and scikit-learn.
+torch==2.9.1

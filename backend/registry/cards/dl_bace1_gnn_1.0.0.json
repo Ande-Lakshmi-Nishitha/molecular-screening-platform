@@ -1,0 +1,315 @@
+{
+  "artifacts": [
+    {
+      "file": "dl_bace1_gnn_1_1.0.0.ts",
+      "member": 1,
+      "role": "gnn_member",
+      "sha256": "f3c2e0c57d35a6da72d6d21a9310c63cbb13503b5aaef3adae25c84a3b2e87d4",
+      "size_bytes": 590718
+    },
+    {
+      "file": "dl_bace1_gnn_2_1.0.0.ts",
+      "member": 2,
+      "role": "gnn_member",
+      "sha256": "2a33e56ae6a1b67f51bc0c16c5870f132c0c6c02d53574ed3a3e97b90b80e7c8",
+      "size_bytes": 590718
+    },
+    {
+      "file": "dl_bace1_gnn_3_1.0.0.ts",
+      "member": 3,
+      "role": "gnn_member",
+      "sha256": "d7d60b1dc7bf1155d8b254ed934ddc4a3e683123e3f7ef8edd5a78118bb1134f",
+      "size_bytes": 590718
+    },
+    {
+      "file": "dl_bace1_gnn_4_1.0.0.ts",
+      "member": 4,
+      "role": "gnn_member",
+      "sha256": "03015e4787b692580899661a8da1c18007cff7d8dc7f1aa5759c6dc839b3dcb9",
+      "size_bytes": 590718
+    },
+    {
+      "file": "dl_bace1_gnn_5_1.0.0.ts",
+      "member": 5,
+      "role": "gnn_member",
+      "sha256": "448e89b8f7fea9ab2d88a7217ca4f7d83af2bf7d3a2be8e4ae40ffdfafbd08a2",
+      "size_bytes": 590718
+    },
+    {
+      "file": "dl_bace1_baseline_1.0.0.json",
+      "role": "baseline",
+      "sha256": "e3a1b0348cac4a14b676ce9a4f04c38c7555886b3f6f596184e96b3cf9c552a7",
+      "size_bytes": 3172155
+    },
+    {
+      "description": "packed Morgan bits of the training rows",
+      "file": "dl_bace1_train_fp_1.0.0.npy",
+      "kind": "reference_data",
+      "sha256": "fd7ae0c76e35e63673ae3e8f7d59c93e088fc38f4a6e53abd31f3a21d291eedf",
+      "size_bytes": 1422976
+    },
+    {
+      "description": "descriptor min/p01/p99/max of the training rows",
+      "file": "dl_bace1_descriptor_ranges_1.0.0.json",
+      "kind": "reference_data",
+      "sha256": "3edb161e5579e7786db0126bf32aa3ce7daed0fc28d25aa9901ac1c4bc7670d7",
+      "size_bytes": 23641
+    }
+  ],
+  "baseline": {
+    "algorithm": "xgboost.XGBRegressor on the ML featuriser (2431 features)",
+    "exported": true,
+    "params": {
+      "colsample_bytree": 0.3,
+      "learning_rate": 0.05,
+      "max_depth": 6,
+      "min_child_weight": 2,
+      "n_estimators": 800,
+      "reg_lambda": 1.0,
+      "subsample": 0.8,
+      "tree_method": "hist"
+    }
+  },
+  "card_version": 1,
+  "data": {
+    "chembl_release": "ChEMBL_37",
+    "citation": "Zdrazil et al., Nucleic Acids Res. 52, D1180 (2024), doi:10.1093/nar/gkad1004",
+    "csv_sha256": "8e64e8365b8c62924c730ed1794ef86c8c2397fbdb86c0e6f1c096095a5889a6",
+    "licence_note": "ChEMBL is licensed CC BY-SA 3.0. Verify on the ChEMBL download page and record the date.",
+    "licence_verified": false,
+    "max_spread": 2.0,
+    "n_clean": 7940,
+    "n_downloaded": 12721,
+    "n_dropped_filters": 2090,
+    "n_dropped_inconsistent_repeats": 111,
+    "n_dropped_out_of_range": 0,
+    "n_dropped_unparsable": 0,
+    "n_dropped_unsupported_atoms": 40,
+    "n_measurements_used": 10261,
+    "origin": "https://www.ebi.ac.uk/chembl/api/data/activity.json",
+    "pactivity_range": [
+      2.0,
+      12.0
+    ],
+    "query": {
+      "pchembl_value__isnull": "false",
+      "standard_type": "IC50",
+      "target_chembl_id": "CHEMBL4822"
+    },
+    "raw_file": "chembl_CHEMBL4822_raw.jsonl",
+    "raw_sha256": "46a4298e917c3195b43a1412135883cf8e57ca0f9ba25ccdab757f1d6bf184bd",
+    "retrieved_at": "2026-10-30T08:54:34Z",
+    "source": "ChEMBL"
+  },
+  "featuriser": {
+    "maccs_bits": 167,
+    "morgan_bits": 2048,
+    "n_descriptors": 216,
+    "n_features": 2431,
+    "signature": "72c6b6d1203118ed",
+    "version": "1"
+  },
+  "graph": {
+    "atoms": [
+      "Br",
+      "C",
+      "Cl",
+      "F",
+      "I",
+      "N",
+      "O",
+      "P",
+      "S"
+    ],
+    "n_atom_features": 30,
+    "n_bond_features": 6,
+    "signature": "0c2cfe4cdf08056f",
+    "version": "1"
+  },
+  "metrics": {
+    "baseline_test": {
+      "mae": 0.5644072575593175,
+      "n": 1588,
+      "r2": 0.6643112960010101,
+      "rmse": 0.7433960425481565,
+      "spearman": 0.8197668118306946
+    },
+    "ensemble_sd_test": {
+      "mean_sd": 0.2800570547586661,
+      "spearman_sd_vs_abs_error": 0.1943455338662388
+    },
+    "ensemble_test": {
+      "mae": 0.5786164082748164,
+      "n": 1588,
+      "r2": 0.6570707663083886,
+      "rmse": 0.7513704924654281,
+      "spearman": 0.8134537590481352
+    }
+  },
+  "model": {
+    "algorithm": "GINE-style message passing GNN, plain PyTorch, TorchScript",
+    "ensemble": {
+      "members_differ_by": "random seed only",
+      "sd_ddof": 1,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "size": 5
+    },
+    "members": [
+      {
+        "best_epoch": 36,
+        "epochs_run": 48,
+        "seconds": 209.7,
+        "seed": 42,
+        "test": {
+          "mae": 0.6492731324911718,
+          "n": 1588,
+          "r2": 0.5763465276225962,
+          "rmse": 0.8351361176462324,
+          "spearman": 0.7684714578380895
+        },
+        "validation_rmse": 0.7521080814061243
+      },
+      {
+        "best_epoch": 53,
+        "epochs_run": 65,
+        "seconds": 270.0,
+        "seed": 43,
+        "test": {
+          "mae": 0.5977731099537097,
+          "n": 1588,
+          "r2": 0.6292599603889479,
+          "rmse": 0.7812438779606624,
+          "spearman": 0.7950324946575777
+        },
+        "validation_rmse": 0.7170698817179658
+      },
+      {
+        "best_epoch": 78,
+        "epochs_run": 80,
+        "seconds": 328.3,
+        "seed": 44,
+        "test": {
+          "mae": 0.5910978221472925,
+          "n": 1588,
+          "r2": 0.6235177124571403,
+          "rmse": 0.7872708213086849,
+          "spearman": 0.8013912765544394
+        },
+        "validation_rmse": 0.6979225865926327
+      },
+      {
+        "best_epoch": 49,
+        "epochs_run": 61,
+        "seconds": 261.8,
+        "seed": 45,
+        "test": {
+          "mae": 0.6240619218980035,
+          "n": 1588,
+          "r2": 0.6071769926232069,
+          "rmse": 0.8041745768513439,
+          "spearman": 0.7803970709029108
+        },
+        "validation_rmse": 0.7387895226460132
+      },
+      {
+        "best_epoch": 65,
+        "epochs_run": 77,
+        "seconds": 6360.9,
+        "seed": 46,
+        "test": {
+          "mae": 0.6013204202603933,
+          "n": 1588,
+          "r2": 0.6067607467707941,
+          "rmse": 0.8046005265787196,
+          "spearman": 0.7856786703230847
+        },
+        "validation_rmse": 0.7216305470847402
+      }
+    ],
+    "params": {
+      "batch_size": 64,
+      "dropout": 0.1,
+      "hidden": 128,
+      "layers": 3,
+      "learning_rate": 0.001,
+      "max_epochs": 80,
+      "patience": 12,
+      "weight_decay": 1e-05
+    },
+    "tuned": false
+  },
+  "name": "dl_bace1_gnn",
+  "qa_acc": {
+    "checks": [
+      {
+        "criterion": "RMSE of the ensemble mean, scaffold split, in the target's own unit",
+        "id": "QA-ACC-DL-RMSE",
+        "measured": 0.7513704924654281,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": "<= 1.0"
+      },
+      {
+        "criterion": "Spearman rank correlation of the ensemble mean, scaffold split",
+        "id": "QA-ACC-DL-SPEARMAN",
+        "measured": 0.8134537590481352,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": ">= 0.5"
+      }
+    ],
+    "shortfalls": []
+  },
+  "requirements": [
+    "FR-015",
+    "FR-016",
+    "FR-017",
+    "FR-018",
+    "FR-019",
+    "FR-020",
+    "QA-ACC",
+    "BR-009"
+  ],
+  "seed": 42,
+  "software": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "python": "3.10.11",
+    "rdkit": "2026.09.1",
+    "scikit_learn": "1.7.2",
+    "torch": "2.9.1+cpu",
+    "xgboost": "3.2.0"
+  },
+  "split": {
+    "acyclic_molecules": "each its own group, spread across the parts",
+    "calibration_part_used_as": "validation set for early stopping",
+    "fractions": [
+      0.7,
+      0.1,
+      0.2
+    ],
+    "method": "scaffold_split_bemis_murcko",
+    "n_calibration": 794,
+    "n_test": 1588,
+    "n_train": 5558,
+    "seed": 42
+  },
+  "target": {
+    "chembl_id": "CHEMBL4822",
+    "id": "BACE1",
+    "name": "Beta-secretase 1 (BACE1)"
+  },
+  "task": "target_activity",
+  "tier": "dl",
+  "trained_at": "2026-10-30T11:05:04Z",
+  "unit": "pIC50",
+  "version": "1.0.0"
+}
