@@ -57,6 +57,9 @@ services:
 
   api:
     <<: *backend
+    environment:
+      <<: *backend-env
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
     networks: [frontend, backend]
     depends_on:
       redis: {condition: service_healthy}

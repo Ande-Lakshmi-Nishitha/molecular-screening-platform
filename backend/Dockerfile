@@ -10,6 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend ./backend
+COPY alembic.ini ./
 COPY deploy/worker_entrypoint.sh deploy/worker_healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/worker_entrypoint.sh /usr/local/bin/worker_healthcheck.sh \
     && useradd --create-home app
