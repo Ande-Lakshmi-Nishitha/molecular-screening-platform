@@ -1,0 +1,317 @@
+{
+  "artifacts": [
+    {
+      "file": "dl_hiv1_protease_gnn_1_1.0.0.ts",
+      "member": 1,
+      "role": "gnn_member",
+      "sha256": "9e76282780b5c3d794ea721667be9e8c12cd8e5aebdf8f21b7cc7aec4e691fa8",
+      "size_bytes": 591582
+    },
+    {
+      "file": "dl_hiv1_protease_gnn_2_1.0.0.ts",
+      "member": 2,
+      "role": "gnn_member",
+      "sha256": "69cf0083c4398a59aea6b8252d07f9da3077d83f1a20945f1814c254f2b0179d",
+      "size_bytes": 591582
+    },
+    {
+      "file": "dl_hiv1_protease_gnn_3_1.0.0.ts",
+      "member": 3,
+      "role": "gnn_member",
+      "sha256": "3d97503eef30d43cd19f983298e89d93f71fe27babe810311767311204adbc55",
+      "size_bytes": 591582
+    },
+    {
+      "file": "dl_hiv1_protease_gnn_4_1.0.0.ts",
+      "member": 4,
+      "role": "gnn_member",
+      "sha256": "4362bc2acc43fe9796419da6e1b7a7ed403e80a6d154601a731f74cdb6b05f0d",
+      "size_bytes": 591582
+    },
+    {
+      "file": "dl_hiv1_protease_gnn_5_1.0.0.ts",
+      "member": 5,
+      "role": "gnn_member",
+      "sha256": "084be1b158c2648d0e5b8d35482eb6329d8961fce7ce1745e7c05a409d48c462",
+      "size_bytes": 591582
+    },
+    {
+      "file": "dl_hiv1_protease_baseline_1.0.0.json",
+      "role": "baseline",
+      "sha256": "7f79e1e371a1e96f36b219447062ab0c7ff05547e8ac30396166151ba8a20787",
+      "size_bytes": 2271873
+    },
+    {
+      "description": "packed Morgan bits of the training rows",
+      "file": "dl_hiv1_protease_train_fp_1.0.0.npy",
+      "kind": "reference_data",
+      "sha256": "a052bc23bf5d6e661ed3a480cce9cdd1805e73bc0167aa6d03c5e8236479e921",
+      "size_bytes": 407168
+    },
+    {
+      "description": "descriptor min/p01/p99/max of the training rows",
+      "file": "dl_hiv1_protease_descriptor_ranges_1.0.0.json",
+      "kind": "reference_data",
+      "sha256": "bae32e23bd1ec8a4492ecdf18c2ba2befc82f4e1be97fa0caad9c4ca9b98b7f1",
+      "size_bytes": 23745
+    }
+  ],
+  "baseline": {
+    "algorithm": "xgboost.XGBRegressor on the ML featuriser (2431 features)",
+    "exported": true,
+    "params": {
+      "colsample_bytree": 0.3,
+      "learning_rate": 0.05,
+      "max_depth": 6,
+      "min_child_weight": 2,
+      "n_estimators": 800,
+      "reg_lambda": 1.0,
+      "subsample": 0.8,
+      "tree_method": "hist"
+    }
+  },
+  "card_version": 1,
+  "data": {
+    "chembl_release": "ChEMBL_37",
+    "citation": "Zdrazil et al., Nucleic Acids Res. 52, D1180 (2024), doi:10.1093/nar/gkad1004",
+    "csv_sha256": "3e1603c5e2f04b5993e9e93f4b669a99bd4eb8831af0fb589cfe61fd8febcd37",
+    "licence_note": "ChEMBL is licensed CC BY-SA 3.0. Verify on the ChEMBL download page and record the date.",
+    "licence_verified": false,
+    "max_spread": 2.0,
+    "n_clean": 2272,
+    "n_downloaded": 3202,
+    "n_dropped_filters": 490,
+    "n_dropped_inconsistent_repeats": 14,
+    "n_dropped_out_of_range": 0,
+    "n_dropped_unparsable": 0,
+    "n_dropped_unsupported_atoms": 6,
+    "n_measurements_used": 2554,
+    "origin": "https://www.ebi.ac.uk/chembl/api/data/activity.json",
+    "pactivity_range": [
+      2.0,
+      12.0
+    ],
+    "query": {
+      "pchembl_value__isnull": "false",
+      "standard_type": "Ki",
+      "target_chembl_id": "CHEMBL243"
+    },
+    "raw_file": "chembl_CHEMBL243_raw.jsonl",
+    "raw_sha256": "389c9e1b4fdf6b091dfd941141431572302aecc0d6ac9cd9f4c4cf6bd93b054b",
+    "retrieved_at": "2026-10-30T09:10:29Z",
+    "source": "ChEMBL"
+  },
+  "featuriser": {
+    "maccs_bits": 167,
+    "morgan_bits": 2048,
+    "n_descriptors": 216,
+    "n_features": 2431,
+    "signature": "72c6b6d1203118ed",
+    "version": "1"
+  },
+  "graph": {
+    "atoms": [
+      "Br",
+      "C",
+      "Cl",
+      "F",
+      "I",
+      "N",
+      "O",
+      "P",
+      "S"
+    ],
+    "n_atom_features": 30,
+    "n_bond_features": 6,
+    "signature": "0c2cfe4cdf08056f",
+    "version": "1"
+  },
+  "metrics": {
+    "baseline_test": {
+      "mae": 0.751960542029077,
+      "n": 455,
+      "r2": 0.5931585178166854,
+      "rmse": 0.9706544602035301,
+      "spearman": 0.7590421181393086
+    },
+    "ensemble_sd_test": {
+      "mean_sd": 0.291701413438534,
+      "spearman_sd_vs_abs_error": 0.2079421274297231
+    },
+    "ensemble_test": {
+      "mae": 0.8328936520251601,
+      "n": 455,
+      "r2": 0.48294875009977134,
+      "rmse": 1.0942557483305677,
+      "spearman": 0.6646171545679331
+    }
+  },
+  "model": {
+    "algorithm": "GINE-style message passing GNN, plain PyTorch, TorchScript",
+    "ensemble": {
+      "members_differ_by": "random seed only",
+      "sd_ddof": 1,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "size": 5
+    },
+    "members": [
+      {
+        "best_epoch": 52,
+        "epochs_run": 64,
+        "seconds": 90.6,
+        "seed": 42,
+        "test": {
+          "mae": 0.869138836829217,
+          "n": 455,
+          "r2": 0.4409382207005451,
+          "rmse": 1.1378419511714801,
+          "spearman": 0.6278078505409613
+        },
+        "validation_rmse": 1.1904663120313417
+      },
+      {
+        "best_epoch": 48,
+        "epochs_run": 60,
+        "seconds": 84.0,
+        "seed": 43,
+        "test": {
+          "mae": 0.8497181290846606,
+          "n": 455,
+          "r2": 0.4678890953576148,
+          "rmse": 1.1100770399610422,
+          "spearman": 0.6673931877221018
+        },
+        "validation_rmse": 1.2608259108135158
+      },
+      {
+        "best_epoch": 49,
+        "epochs_run": 61,
+        "seconds": 84.8,
+        "seed": 44,
+        "test": {
+          "mae": 0.8592803939987016,
+          "n": 455,
+          "r2": 0.442755811469121,
+          "rmse": 1.1359908009143997,
+          "spearman": 0.6522826903761966
+        },
+        "validation_rmse": 1.1802882949146998
+      },
+      {
+        "best_epoch": 39,
+        "epochs_run": 51,
+        "seconds": 66.8,
+        "seed": 45,
+        "test": {
+          "mae": 0.9035594479068295,
+          "n": 455,
+          "r2": 0.38647706335974163,
+          "rmse": 1.1919758111601575,
+          "spearman": 0.5911923802692529
+        },
+        "validation_rmse": 1.2854096052252262
+      },
+      {
+        "best_epoch": 56,
+        "epochs_run": 68,
+        "seconds": 87.5,
+        "seed": 46,
+        "test": {
+          "mae": 0.838019921564794,
+          "n": 455,
+          "r2": 0.4769070534238673,
+          "rmse": 1.1006303201265033,
+          "spearman": 0.668468541470494
+        },
+        "validation_rmse": 1.130632969649593
+      }
+    ],
+    "params": {
+      "batch_size": 64,
+      "dropout": 0.1,
+      "hidden": 128,
+      "layers": 3,
+      "learning_rate": 0.001,
+      "max_epochs": 80,
+      "patience": 12,
+      "weight_decay": 1e-05
+    },
+    "tuned": false
+  },
+  "name": "dl_hiv1_protease_gnn",
+  "qa_acc": {
+    "checks": [
+      {
+        "criterion": "RMSE of the ensemble mean, scaffold split, in the target's own unit",
+        "id": "QA-ACC-DL-RMSE",
+        "measured": 1.0942557483305677,
+        "met": false,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": "<= 1.0"
+      },
+      {
+        "criterion": "Spearman rank correlation of the ensemble mean, scaffold split",
+        "id": "QA-ACC-DL-SPEARMAN",
+        "measured": 0.6646171545679331,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": ">= 0.5"
+      }
+    ],
+    "shortfalls": [
+      "QA-ACC-DL-RMSE"
+    ]
+  },
+  "requirements": [
+    "FR-015",
+    "FR-016",
+    "FR-017",
+    "FR-018",
+    "FR-019",
+    "FR-020",
+    "QA-ACC",
+    "BR-009"
+  ],
+  "seed": 42,
+  "software": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "python": "3.10.11",
+    "rdkit": "2026.09.1",
+    "scikit_learn": "1.7.2",
+    "torch": "2.9.1+cpu",
+    "xgboost": "3.2.0"
+  },
+  "split": {
+    "acyclic_molecules": "each its own group, spread across the parts",
+    "calibration_part_used_as": "validation set for early stopping",
+    "fractions": [
+      0.7,
+      0.1,
+      0.2
+    ],
+    "method": "scaffold_split_bemis_murcko",
+    "n_calibration": 227,
+    "n_test": 455,
+    "n_train": 1590,
+    "seed": 42
+  },
+  "target": {
+    "chembl_id": "CHEMBL243",
+    "id": "HIV1_PROTEASE",
+    "name": "HIV-1 protease"
+  },
+  "task": "target_activity",
+  "tier": "dl",
+  "trained_at": "2026-10-30T11:14:10Z",
+  "unit": "pKi",
+  "version": "1.0.0"
+}

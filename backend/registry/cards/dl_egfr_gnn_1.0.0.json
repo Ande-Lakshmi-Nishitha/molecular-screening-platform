@@ -1,0 +1,315 @@
+{
+  "artifacts": [
+    {
+      "file": "dl_egfr_gnn_1_1.0.0.ts",
+      "member": 1,
+      "role": "gnn_member",
+      "sha256": "553454a34ae606dc470e5a2bd972b03287d2e83f571db146b32c110be6edd502",
+      "size_bytes": 590586
+    },
+    {
+      "file": "dl_egfr_gnn_2_1.0.0.ts",
+      "member": 2,
+      "role": "gnn_member",
+      "sha256": "ce48588e17218d8e076b29645bc27dc2fc0387907ff28d755ede1502922e586c",
+      "size_bytes": 590586
+    },
+    {
+      "file": "dl_egfr_gnn_3_1.0.0.ts",
+      "member": 3,
+      "role": "gnn_member",
+      "sha256": "fb23305e09fc649ff1bb85b647598421a5dd3c19ceaa53e60594dd6c15a81694",
+      "size_bytes": 590586
+    },
+    {
+      "file": "dl_egfr_gnn_4_1.0.0.ts",
+      "member": 4,
+      "role": "gnn_member",
+      "sha256": "56cbfe0c5f7094962320ae05ad1aa980e2b593b814cc463da373949693e3ce55",
+      "size_bytes": 590586
+    },
+    {
+      "file": "dl_egfr_gnn_5_1.0.0.ts",
+      "member": 5,
+      "role": "gnn_member",
+      "sha256": "60913febd99ae137c84cc364e3c9d5efe96467985a5c801842a6076252643c03",
+      "size_bytes": 590586
+    },
+    {
+      "file": "dl_egfr_baseline_1.0.0.json",
+      "role": "baseline",
+      "sha256": "4344968ebc352322ae3bbfd676e58d1c870db3320999c063eb96eda576611280",
+      "size_bytes": 3293368
+    },
+    {
+      "description": "packed Morgan bits of the training rows",
+      "file": "dl_egfr_train_fp_1.0.0.npy",
+      "kind": "reference_data",
+      "sha256": "a0ca2cbe5b2359c98d6d8bb1cf7a28fafd8ae80e51f86a482a6f9089554da64e",
+      "size_bytes": 1763456
+    },
+    {
+      "description": "descriptor min/p01/p99/max of the training rows",
+      "file": "dl_egfr_descriptor_ranges_1.0.0.json",
+      "kind": "reference_data",
+      "sha256": "ea1c2e61483b8083480670d64bed9ec2cc264953943324beb563e0874f5f87ab",
+      "size_bytes": 23575
+    }
+  ],
+  "baseline": {
+    "algorithm": "xgboost.XGBRegressor on the ML featuriser (2431 features)",
+    "exported": true,
+    "params": {
+      "colsample_bytree": 0.3,
+      "learning_rate": 0.05,
+      "max_depth": 6,
+      "min_child_weight": 2,
+      "n_estimators": 800,
+      "reg_lambda": 1.0,
+      "subsample": 0.8,
+      "tree_method": "hist"
+    }
+  },
+  "card_version": 1,
+  "data": {
+    "chembl_release": "ChEMBL_37",
+    "citation": "Zdrazil et al., Nucleic Acids Res. 52, D1180 (2024), doi:10.1093/nar/gkad1004",
+    "csv_sha256": "801b4d6b61dd97332c08accf4c2ae29253a6b651df1a6d7c402230c2303f649d",
+    "licence_note": "ChEMBL is licensed CC BY-SA 3.0. Verify on the ChEMBL download page and record the date.",
+    "licence_verified": false,
+    "max_spread": 2.0,
+    "n_clean": 9840,
+    "n_downloaded": 19378,
+    "n_dropped_filters": 3294,
+    "n_dropped_inconsistent_repeats": 439,
+    "n_dropped_out_of_range": 0,
+    "n_dropped_unparsable": 0,
+    "n_dropped_unsupported_atoms": 74,
+    "n_measurements_used": 13731,
+    "origin": "https://www.ebi.ac.uk/chembl/api/data/activity.json",
+    "pactivity_range": [
+      2.0,
+      12.0
+    ],
+    "query": {
+      "pchembl_value__isnull": "false",
+      "standard_type": "IC50",
+      "target_chembl_id": "CHEMBL203"
+    },
+    "raw_file": "chembl_CHEMBL203_raw.jsonl",
+    "raw_sha256": "5475441abb1879dfe031b2dd59f558c25369945486ef23904396cdc15868ab98",
+    "retrieved_at": "2026-10-30T06:41:11Z",
+    "source": "ChEMBL"
+  },
+  "featuriser": {
+    "maccs_bits": 167,
+    "morgan_bits": 2048,
+    "n_descriptors": 216,
+    "n_features": 2431,
+    "signature": "72c6b6d1203118ed",
+    "version": "1"
+  },
+  "graph": {
+    "atoms": [
+      "Br",
+      "C",
+      "Cl",
+      "F",
+      "I",
+      "N",
+      "O",
+      "P",
+      "S"
+    ],
+    "n_atom_features": 30,
+    "n_bond_features": 6,
+    "signature": "0c2cfe4cdf08056f",
+    "version": "1"
+  },
+  "metrics": {
+    "baseline_test": {
+      "mae": 0.6515198305758033,
+      "n": 1968,
+      "r2": 0.5855318684926571,
+      "rmse": 0.8507440003601308,
+      "spearman": 0.7650598501696693
+    },
+    "ensemble_sd_test": {
+      "mean_sd": 0.31563188437031436,
+      "spearman_sd_vs_abs_error": 0.27056667751893837
+    },
+    "ensemble_test": {
+      "mae": 0.6702982592388866,
+      "n": 1968,
+      "r2": 0.5566566327554727,
+      "rmse": 0.8798799696516391,
+      "spearman": 0.7498355170040707
+    }
+  },
+  "model": {
+    "algorithm": "GINE-style message passing GNN, plain PyTorch, TorchScript",
+    "ensemble": {
+      "members_differ_by": "random seed only",
+      "sd_ddof": 1,
+      "seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "size": 5
+    },
+    "members": [
+      {
+        "best_epoch": 59,
+        "epochs_run": 71,
+        "seconds": 379.4,
+        "seed": 42,
+        "test": {
+          "mae": 0.7318664182201634,
+          "n": 1968,
+          "r2": 0.46366620466430075,
+          "rmse": 0.9677672143621302,
+          "spearman": 0.7026588836623399
+        },
+        "validation_rmse": 0.8760479902077463
+      },
+      {
+        "best_epoch": 73,
+        "epochs_run": 80,
+        "seconds": 447.2,
+        "seed": 43,
+        "test": {
+          "mae": 0.710721200418666,
+          "n": 1968,
+          "r2": 0.4795479246212546,
+          "rmse": 0.9533309567917382,
+          "spearman": 0.7301483357880871
+        },
+        "validation_rmse": 0.8539150242030367
+      },
+      {
+        "best_epoch": 74,
+        "epochs_run": 80,
+        "seconds": 503.2,
+        "seed": 44,
+        "test": {
+          "mae": 0.7069945692967593,
+          "n": 1968,
+          "r2": 0.5127505172933686,
+          "rmse": 0.9224206498784125,
+          "spearman": 0.7356180081680738
+        },
+        "validation_rmse": 0.858696075613088
+      },
+      {
+        "best_epoch": 65,
+        "epochs_run": 77,
+        "seconds": 472.5,
+        "seed": 45,
+        "test": {
+          "mae": 0.70588382775706,
+          "n": 1968,
+          "r2": 0.4978346845014918,
+          "rmse": 0.9364329351280195,
+          "spearman": 0.7132380914330541
+        },
+        "validation_rmse": 0.892080994668133
+      },
+      {
+        "best_epoch": 53,
+        "epochs_run": 65,
+        "seconds": 382.4,
+        "seed": 46,
+        "test": {
+          "mae": 0.6980838455756504,
+          "n": 1968,
+          "r2": 0.5150149120205969,
+          "rmse": 0.9202747709006901,
+          "spearman": 0.7291570936388063
+        },
+        "validation_rmse": 0.9144514594944477
+      }
+    ],
+    "params": {
+      "batch_size": 64,
+      "dropout": 0.1,
+      "hidden": 128,
+      "layers": 3,
+      "learning_rate": 0.001,
+      "max_epochs": 80,
+      "patience": 12,
+      "weight_decay": 1e-05
+    },
+    "tuned": false
+  },
+  "name": "dl_egfr_gnn",
+  "qa_acc": {
+    "checks": [
+      {
+        "criterion": "RMSE of the ensemble mean, scaffold split, in the target's own unit",
+        "id": "QA-ACC-DL-RMSE",
+        "measured": 0.8798799696516391,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": "<= 1.0"
+      },
+      {
+        "criterion": "Spearman rank correlation of the ensemble mean, scaffold split",
+        "id": "QA-ACC-DL-SPEARMAN",
+        "measured": 0.7498355170040707,
+        "met": true,
+        "provisional": true,
+        "reference": "TBD-C4",
+        "target": ">= 0.5"
+      }
+    ],
+    "shortfalls": []
+  },
+  "requirements": [
+    "FR-015",
+    "FR-016",
+    "FR-017",
+    "FR-018",
+    "FR-019",
+    "FR-020",
+    "QA-ACC",
+    "BR-009"
+  ],
+  "seed": 42,
+  "software": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "python": "3.10.11",
+    "rdkit": "2026.09.1",
+    "scikit_learn": "1.7.2",
+    "torch": "2.9.1+cpu",
+    "xgboost": "3.2.0"
+  },
+  "split": {
+    "acyclic_molecules": "each its own group, spread across the parts",
+    "calibration_part_used_as": "validation set for early stopping",
+    "fractions": [
+      0.7,
+      0.1,
+      0.2
+    ],
+    "method": "scaffold_split_bemis_murcko",
+    "n_calibration": 984,
+    "n_test": 1968,
+    "n_train": 6888,
+    "seed": 42
+  },
+  "target": {
+    "chembl_id": "CHEMBL203",
+    "id": "EGFR",
+    "name": "Epidermal growth factor receptor (EGFR)"
+  },
+  "task": "target_activity",
+  "tier": "dl",
+  "trained_at": "2026-10-30T08:45:44Z",
+  "unit": "pIC50",
+  "version": "1.0.0"
+}

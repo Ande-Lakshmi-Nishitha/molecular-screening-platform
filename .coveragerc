@@ -1,0 +1,4 @@
+[report]
+# torch writes a temporary module while it is imported; without this, "coverage report" stops with
+# "No source for code" in any environment where torch is installed (CI, once requirements-dl.txt is added).
+ignore_errors = True
