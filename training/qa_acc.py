@@ -9,6 +9,8 @@ RMSE_VS_BASELINE_FACTOR = 1.10   # about 10% of the Random Forest baseline or be
 TOX21_MEAN_AUC_MIN = 0.75
 COVERAGE_MIN = 0.85
 COVERAGE_MAX = 0.95
+DL_RMSE_MAX = 1.0         # pIC50 / pKi units, "about 1.0 or lower"
+DL_SPEARMAN_MIN = 0.5     # "about 0.5 or higher"
 
 
 def _check(
@@ -57,6 +59,26 @@ def tox21_checks(mean_auc: Optional[float]) -> List[Dict]:
             mean_auc,
             met,
         )
+    ]
+
+
+def dl_activity_checks(rmse: float, spearman: Optional[float]) -> List[Dict]:
+    """QA-ACC checks for one DL target (ensemble mean on the scaffold-split test set)."""
+    return [
+        _check(
+            "QA-ACC-DL-RMSE",
+            "RMSE of the ensemble mean, scaffold split, in the target's own unit",
+            f"<= {DL_RMSE_MAX}",
+            rmse,
+            rmse <= DL_RMSE_MAX,
+        ),
+        _check(
+            "QA-ACC-DL-SPEARMAN",
+            "Spearman rank correlation of the ensemble mean, scaffold split",
+            f">= {DL_SPEARMAN_MIN}",
+            spearman,
+            spearman is not None and spearman >= DL_SPEARMAN_MIN,
+        ),
     ]
 
 

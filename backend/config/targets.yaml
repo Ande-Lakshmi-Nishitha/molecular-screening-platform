@@ -1,3 +1,17 @@
-# Supported targets (FR-015, FR-020). Owner: Nishitha. Open item TBD-C2.
-# proposed: EGFR, BACE1, HIV-1 protease; each entry: id, name, chembl_id, unit (pIC50 or pKi)
-targets: []
+# Supported targets (FR-015, FR-020). Owner: Nishitha. Open item TBD-C2 (proposed, confirm before the release).
+# Each entry: id (what the API accepts as target_id), name, chembl_id, unit (pIC50 or pKi).
+# training/fetch_chembl.py reads this file: the unit decides which ChEMBL activity type is downloaded
+# (pIC50 -> IC50, pKi -> Ki). Changing a target means retraining its models (MSP-25).
+targets:
+  - id: EGFR
+    name: Epidermal growth factor receptor (EGFR)
+    chembl_id: CHEMBL203
+    unit: pIC50
+  - id: BACE1
+    name: Beta-secretase 1 (BACE1)
+    chembl_id: CHEMBL4822
+    unit: pIC50
+  - id: HIV1_PROTEASE
+    name: HIV-1 protease
+    chembl_id: CHEMBL243
+    unit: pKi
