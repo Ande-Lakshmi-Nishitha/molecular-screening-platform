@@ -1,16 +1,17 @@
-"""Job status and partial results (FR-031, FR-032, FR-036, SEC-002).
+"""Job status and partial results (FR-031, FR-032, FR-036, FR-059, SEC-002).
 
 Owner: Ayushi. Results keep model_version and params_hash, and the job keeps rules_version,
 so every stored answer can be traced to the versions that produced it.
 """
+from backend.core.config import Settings
 from backend.db.models import TIERS
-from backend.db.repositories import jobs
+from backend.db.repositories import jobs, task_state
 
 ACTIVE = ("queued", "running")
 
 
 class JobAccessError(Exception):
-    """The caller may not see this job (403) or it does not exist (404)."""
+    """The caller may not see this job (403), it does not exist (404) or cannot be cancelled (409)."""
 
     def __init__(self, code, message, status):
         super().__init__(message)
@@ -53,6 +54,7 @@ def build_status(session, job_id, user_id):
         if jobs.job_exists(session, job_id):
             raise JobAccessError("FORBIDDEN", "You do not have access to this job.", 403)
         raise JobAccessError("JOB_NOT_FOUND", "Job not found.", 404)
+    task_state.expire_overdue(session, job.id, Settings.from_env())
     tasks = jobs.get_tasks_owned(session, job.id, user_id)
     tasks.sort(key=lambda task: TIERS.index(task.tier) if task.tier in TIERS else len(TIERS))
     results = jobs.get_results_owned(session, [task.id for task in tasks], user_id)
