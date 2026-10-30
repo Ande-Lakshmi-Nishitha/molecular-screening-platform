@@ -33,7 +33,7 @@ class SearchCache:
 
     @staticmethod
     def key(source, query):
-        digest = hashlib.sha1(query.strip().lower().encode("utf-8")).hexdigest()
+        digest = hashlib.sha256(query.strip().lower().encode("utf-8")).hexdigest()
         return f"msp:search:{source}:{digest}"
 
     def get(self, source, query):
