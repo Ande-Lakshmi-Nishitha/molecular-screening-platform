@@ -72,7 +72,8 @@ export const api = {
   // PubChem or ChEMBL name search (MSP-21); { source, query, results, cached }.
   searchMolecules: (query, source) =>
     request(`/molecules/search?query=${encodeURIComponent(query)}&source=${encodeURIComponent(source)}`),
-   getModels: () => request("/models"),
+  getModels: () => request("/models"),
+  listJobs: (page, pageSize) => request(`/jobs?page=${page}&page_size=${pageSize}`),
 };
 
 export { ApiError };
