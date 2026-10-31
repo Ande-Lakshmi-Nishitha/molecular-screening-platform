@@ -98,3 +98,52 @@ LIMITATION_QML_STUB = (
 def qml_stub_labels(model_version: str) -> Dict[str, str]:
     """Label fields for the electronic-stability block while the stub backend is in use."""
     return {"unit": UNIT_EV, "limitation": LIMITATION_QML_STUB, "model_version": model_version}
+
+
+UNIT_ALERT_COUNT = "number of matching structural alerts"
+UNIT_RULE_VIOLATIONS = "number of rule violations"
+UNIT_TANIMOTO = "Tanimoto similarity (0 to 1)"
+
+LIMITATION_ALERTS = (
+    "Substructure patterns from the public PAINS and Brenk lists that are often linked to "
+    "assay interference or to unwanted reactivity. A match is a reason to look closer, not a "
+    "finding about this molecule; having no match does not mean there is no concern."
+)
+
+LIMITATION_RULES = (
+    "Simple property rules of thumb (Lipinski rule of five, Veber). They describe how a "
+    "molecule's size and polarity compare with the usual ranges; they do not predict "
+    "absorption, activity or toxicity, and many useful molecules break them."
+)
+
+LIMITATION_DOMAIN = (
+    "Compares this molecule with the molecules the models were trained on: the highest Tanimoto "
+    "similarity to any training molecule, and whether key properties lie inside the training "
+    "range. The limits are provisional and not tuned on measured results. Being inside the "
+    "domain does not make a prediction correct."
+)
+
+WARNING_OUT_OF_DOMAIN = (
+    "This molecule is unlike the molecules the models were trained on. Treat these predictions "
+    "with extra caution."
+)
+
+WARNING_DOMAIN_UNAVAILABLE = (
+    "The applicability domain could not be checked for this molecule. Treat these predictions "
+    "with caution."
+)
+
+
+def alerts_labels(model_version: str) -> Dict[str, str]:
+    """Label fields for the structural-alerts block."""
+    return {"unit": UNIT_ALERT_COUNT, "limitation": LIMITATION_ALERTS, "model_version": model_version}
+
+
+def rules_labels(model_version: str) -> Dict[str, str]:
+    """Label fields for the Lipinski / Veber block."""
+    return {"unit": UNIT_RULE_VIOLATIONS, "limitation": LIMITATION_RULES, "model_version": model_version}
+
+
+def domain_labels(model_version: str) -> Dict[str, str]:
+    """Label fields for the applicability-domain block."""
+    return {"unit": UNIT_TANIMOTO, "limitation": LIMITATION_DOMAIN, "model_version": model_version}
