@@ -1,4 +1,32 @@
 # Versioned triage rules (FR-033, BR-005). Owner: Ayushi. Load with yaml.safe_load only.
-version: "0.1"
-# five dimensions: developability, safety_signals, target_activity, electronic_stability, confidence
-# thresholds are open until TBD-C9
+# TBD-C9: the thresholds below are PROVISIONAL until a baseline run has produced real model outputs.
+# Five dimensions: developability, safety_signals, target_activity, electronic_stability, confidence.
+# Within a dimension the worst colour wins: red beats amber beats green.
+version: "0.2"
+status: provisional
+
+developability:           # ML tier, predicted logS (mol/L), higher is better
+  logs_green_min: -4.0
+  logs_amber_min: -6.0
+
+safety_signals:           # ML tier, highest Tox21 assay probability
+  probability_amber_min: 0.5
+  probability_red_min: 0.7
+
+target_activity:          # DL tier, ensemble mean pIC50 / pKi, higher is better
+  potency_green_min: 7.0
+  potency_amber_min: 6.0
+
+electronic_stability:     # QML tier, HOMO-LUMO gap in eV, higher is better
+  gap_ev_green_min: 4.0
+  gap_ev_amber_min: 2.5
+  exclude_stub_backend: false   # true: a stub result is shown as unavailable instead of coloured
+
+confidence:               # amber or red when uncertainty is high or a tier failed
+  ml_interval_width_amber: 2.0  # width of the 90% logS interval
+  dl_sd_amber: 0.7              # ensemble SD in pIC50 / pKi units
+  dl_sd_red: 1.2
+  dl_baseline_gap_amber: 1.0    # |ensemble mean - baseline|
+  failed_tiers_amber: 1         # eligible tiers that failed
+  failed_tiers_red: 2
+  
