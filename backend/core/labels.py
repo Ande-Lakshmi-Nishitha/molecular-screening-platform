@@ -83,3 +83,18 @@ def tox21_labels(model_version: str) -> Dict[str, str]:
 def missing_labels(block: Mapping) -> List[str]:
     """Names of the required label fields that are absent or empty in a result block."""
     return [name for name in REQUIRED_BLOCK_FIELDS if not block.get(name)]
+
+
+UNIT_EV = "eV"
+
+LIMITATION_QML_STUB = (
+    "STUB: a fixed demonstration value from a placeholder backend. No quantum calculation was "
+    "run, and the same number is returned for every molecule, so it says nothing about this "
+    "molecule's electronic stability and must not be used to compare or rank molecules. A real "
+    "estimate of the HOMO-LUMO gap (in eV) replaces it in a later release."
+)
+
+
+def qml_stub_labels(model_version: str) -> Dict[str, str]:
+    """Label fields for the electronic-stability block while the stub backend is in use."""
+    return {"unit": UNIT_EV, "limitation": LIMITATION_QML_STUB, "model_version": model_version}
