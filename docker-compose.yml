@@ -78,6 +78,11 @@ services:
 
   worker-dl:
     <<: *worker
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        INSTALL_DL: "1"
     environment: {<<: *backend-env, QUEUE: dl, CONCURRENCY: "1", MODELS_DIR: /models}
     volumes: ["./models:/models:ro"]
 

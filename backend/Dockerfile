@@ -6,8 +6,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements.txt requirements-dl.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Only the DL worker sets INSTALL_DL=1 (see docker-compose.yml). The CPU build of PyTorch
+# is used because the default Linux wheel pulls in several GB of CUDA libraries.
+ARG INSTALL_DL=0
+RUN if [ "$INSTALL_DL" = "1" ]; then \
+        pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements-dl.txt; \
+    fi
 
 COPY backend ./backend
 COPY alembic.ini ./
