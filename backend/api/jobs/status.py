@@ -3,6 +3,7 @@
 Owner: Ayushi. Results keep model_version and params_hash, and the job keeps rules_version,
 so every stored answer can be traced to the versions that produced it.
 """
+from backend.core import labels
 from backend.core.config import Settings
 from backend.db.models import TIERS
 from backend.db.repositories import jobs, task_state
@@ -60,6 +61,7 @@ def build_status(session, job_id, user_id):
     results = jobs.get_results_owned(session, [task.id for task in tasks], user_id)
     return {
         "job_id": str(job.id),
+        "disclaimer": labels.DISCLAIMER,
         "status": overall_status([t.status for t in tasks], job.cancelled_at is not None),
         "target_id": job.target_id,
         "rules_version": job.rules_version,

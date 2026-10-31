@@ -1,7 +1,8 @@
 """All disclaimer, limitation and label wording in one file (minimal first version, MSP-23; DL added in MSP-26).
 
 Owner: Nishitha. Requirements: NFR-007..011, BR-006, BR-007.
-MSP-32 completes this file (QML and DL wording, the schema test over every tier).
+MSP-32 completes this file (QML wording for a real backend, all_wording(), forbidden_claims_in()) and adds
+the schema test over every tier (tests/unit/test_result_schema.py).
 
 Rules for every sentence kept here:
 * Nothing says a molecule is safe, non-toxic, effective or approved (NFR-011).
@@ -13,6 +14,7 @@ Rules for every sentence kept here:
 Code builds result blocks from the helpers below and never writes its own wording.
 Pure Python: no Flask, RDKit, database or Celery imports.
 """
+import re
 from typing import Dict, List, Mapping
 
 # Fields every result block must hold. missing_labels() reports the ones that do not.
@@ -147,3 +149,35 @@ def rules_labels(model_version: str) -> Dict[str, str]:
 def domain_labels(model_version: str) -> Dict[str, str]:
     """Label fields for the applicability-domain block."""
     return {"unit": UNIT_TANIMOTO, "limitation": LIMITATION_DOMAIN, "model_version": model_version}
+
+
+LIMITATION_QML = (
+    "Estimated by a quantum-chemistry calculation for a small molecule in a small active space. "
+    "The HOMO-LUMO gap is an indicator of electronic stability only: it is not a measurement, it "
+    "depends on the method and active space used, and it says nothing about reactivity, shelf "
+    "life or biological behaviour. A run that did not converge is flagged and less reliable."
+)
+
+# Words that must never be used to describe a molecule (NFR-011), matched as whole words.
+FORBIDDEN_CLAIMS = ("safe", "non-toxic", "nontoxic", "harmless", "effective", "approved", "cure", "cured")
+
+
+def qml_labels(is_stub: bool, model_version: str) -> Dict[str, str]:
+    """Label fields for the electronic-stability block: the stub wording or the real-backend wording."""
+    if is_stub:
+        return qml_stub_labels(model_version)
+    return {"unit": UNIT_EV, "limitation": LIMITATION_QML, "model_version": model_version}
+
+
+def all_wording() -> Dict[str, str]:
+    """Every fixed sentence in this file by constant name (the schema test checks them all)."""
+    return {name: value for name, value in sorted(globals().items())
+            if isinstance(value, str)
+            and name.split("_")[0] in ("LIMITATION", "WARNING", "DISCLAIMER")}
+
+
+def forbidden_claims_in(text: str) -> List[str]:
+    """The forbidden whole words found in a text (empty when the text is clean)."""
+    lowered = text.lower()
+    return [word for word in FORBIDDEN_CLAIMS
+            if re.search(r"(?<![a-z0-9])" + re.escape(word) + r"(?![a-z0-9])", lowered)]
