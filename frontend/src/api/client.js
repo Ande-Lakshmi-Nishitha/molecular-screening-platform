@@ -16,8 +16,10 @@ export const setUnauthorizedHandler = (fn) => {
 };
 
 // The ONLY function in the app that calls fetch.
+// A FormData body (file upload) is sent as is; the browser sets the multipart Content-Type.
 export async function request(path, { method = "GET", body, auth = true } = {}) {
-  const headers = { "Content-Type": "application/json" };
+  const isForm = typeof FormData !== "undefined" && body instanceof FormData;
+  const headers = isForm ? {} : { "Content-Type": "application/json" };
   const token = tokenStore.get();
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
@@ -26,7 +28,7 @@ export async function request(path, { method = "GET", body, auth = true } = {}) 
     res = await fetch(`${BASE_URL}${path}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
     });
   } catch {
     throw networkError();
@@ -54,6 +56,22 @@ export const api = {
   getJob: (id) => request(`/jobs/${encodeURIComponent(id)}`),
   // Cancel a job; the response is the updated job, same shape as getJob.
   cancelJob: (id) => request(`/jobs/${encodeURIComponent(id)}`, { method: "DELETE" }),
+  // Supported targets: { targets: [{ id, name, chembl_id, unit }] }.
+  getTargets: () => request("/targets"),
+  // Standardise a molecule and report per-tier eligibility (MSP-20).
+  validateSmiles: (smiles, targetId) =>
+    request("/molecules/validate", { method: "POST", body: targetId ? { smiles, target_id: targetId } : { smiles } }),
+  validateFile: (file, targetId) => {
+    const form = new FormData();
+    form.append("file", file);
+    if (targetId) form.append("target_id", targetId);
+    return request("/molecules/validate", { method: "POST", body: form });
+  },
+  // Create a job and queue its tiers (MSP-29); 202 with { job_id, molecule, tasks }.
+  submitMolecule: (payload) => request("/molecules/submit", { method: "POST", body: payload }),
+  // PubChem or ChEMBL name search (MSP-21); { source, query, results, cached }.
+  searchMolecules: (query, source) =>
+    request(`/molecules/search?query=${encodeURIComponent(query)}&source=${encodeURIComponent(source)}`),
 };
 
 export { ApiError };
