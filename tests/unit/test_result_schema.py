@@ -141,7 +141,7 @@ class WordingTests(unittest.TestCase):
         for name in ("DISCLAIMER", "LIMITATION_SOLUBILITY", "LIMITATION_TOX21", "LIMITATION_ACTIVITY",
                      "LIMITATION_BASELINE", "LIMITATION_QML", "LIMITATION_QML_STUB", "LIMITATION_ALERTS",
                      "LIMITATION_RULES", "LIMITATION_DOMAIN", "WARNING_OUT_OF_DOMAIN",
-                     "WARNING_DOMAIN_UNAVAILABLE"):
+                     "WARNING_DOMAIN_UNAVAILABLE", "LIMITATION_QML_REFERENCE", "WARNING_QML_NOT_CONVERGED"):
             self.assertIn(name, wording)
         for name, text in wording.items():
             with self.subTest(name=name):

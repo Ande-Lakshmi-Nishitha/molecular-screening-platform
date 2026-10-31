@@ -13,6 +13,11 @@ without telling Ayushi:
    "backend": {"name": "stub", "version": "1.0.0", "is_stub": true},
    "active_space": {"electrons": 4, "orbitals": 4}}
 
+  Backend "vqe" (MSP-28, QML_BACKEND=vqe) changes the payload like this: metric "vqe_excitation_gap" (not
+  "homo_lumo_gap"), is_stub false, convergence gains "error_vs_fci_mha" (converged means that error is at or
+  below the threshold), "warning" is added to electronic_stability when not converged, and the payload gains
+  "excluded_from_triage", "classical_references", "run" and "energies". See docs/api/qml-result-payload.md.
+
   model_version  "qml_<backend name>@<backend version>"
   params_hash    SHA-256 of the backend identity, the convergence threshold and the payload version
 
@@ -41,8 +46,20 @@ TIER = "qml"
 BACKEND_ENV = "QML_BACKEND"
 DEFAULT_BACKEND = "stub"
 PAYLOAD_VERSION = 1
-METRIC = "homo_lumo_gap"
-BACKENDS: Dict[str, Callable[[], QuantumBackend]] = {"stub": StubBackend}
+METRIC = "homo_lumo_gap"            # the stub keeps the name of the agreed contract
+METRIC_VQE = "vqe_excitation_gap"   # what a real backend computes: energy to the lowest excited singlet
+
+
+def _vqe_backend() -> QuantumBackend:
+    """The PennyLane backend. PennyLane and PySCF are installed for the QML worker only (requirements-qml.txt)."""
+    try:
+        from backend.workers.qml.vqe_backend import VqeBackend  # pylint: disable=import-outside-toplevel
+    except ImportError as exc:
+        raise ModelLoadError("The quantum libraries are not installed.") from exc
+    return VqeBackend()
+
+
+BACKENDS: Dict[str, Callable[[], QuantumBackend]] = {"stub": StubBackend, "vqe": _vqe_backend}
 
 
 @dataclass(frozen=True)
@@ -70,24 +87,47 @@ class QmlPredictor:
     def predict_smiles(self, smiles: str,
                        should_cancel: Optional[Callable[[], bool]] = None) -> QmlResult:
         """Estimate the gap of a stored canonical SMILES and build the labelled payload."""
-        if not self.backend.is_stub:  # a real backend gets its own wording in MSP-28 (labels.py)
-            raise ModelLoadError("no wording for a non-stub quantum backend yet")
         mol = Chem.MolFromSmiles(smiles or "")  # None for an unreadable structure: tier_eligibility refuses it
         if not eligibility.tier_eligibility(mol)[eligibility.TIER_QML].eligible:
             raise ValueError("the molecule does not qualify for whole-molecule QML")
         estimate = self.backend.estimate_gap(smiles, self.threshold_mha, should_cancel)
-        stability = {"metric": METRIC, "value": estimate.gap_ev,
-                     **labels.qml_stub_labels(self.model_version)}
+        convergence = estimate.convergence
+        stability = {"metric": METRIC if self.backend.is_stub else METRIC_VQE, "value": estimate.gap_ev,
+                     **labels.qml_labels(self.backend.is_stub, self.model_version)}
+        if not convergence.converged and not self.backend.is_stub:
+            stability["warning"] = labels.WARNING_QML_NOT_CONVERGED
         payload = {
             "tier": TIER,
             "is_stub": self.backend.is_stub,
             "electronic_stability": stability,
-            "convergence": estimate.convergence.to_dict(),
+            "convergence": convergence.to_dict(),
             "backend": {"name": self.backend.name, "version": self.backend.version,
                         "is_stub": self.backend.is_stub},
             "active_space": {"electrons": estimate.active_electrons, "orbitals": estimate.active_orbitals},
         }
+        if estimate.details is not None:
+            payload.update(_real_blocks(estimate.details, convergence.converged, self.model_version))
         return QmlResult(payload, self.model_version, self.params_hash)
+
+
+def _real_blocks(details: Dict, converged: bool, model_version: str) -> Dict:
+    """The extra blocks of a real backend: triage flag, classical references, run settings, energies."""
+    references = details["references"]
+    return {
+        "excluded_from_triage": not converged,
+        "classical_references": {
+            "hf_gap_ev": references["hf_gap_ev"],
+            "fci_gap_ev": references["fci_gap_ev"],
+            "hf_energy_ha": references["hf_energy_ha"],
+            "fci_ground_energy_ha": references["fci_ground_energy_ha"],
+            "fci_excited_energy_ha": references["fci_excited_energy_ha"],
+            "source": references["source"],
+            **labels.qml_reference_labels(model_version),
+        },
+        "run": details["run"],
+        "energies": {"ground_state": details["ground_state"], "excited_state": details["excited_state"],
+                     "gap_error_ev": details["gap_error_ev"]},
+    }
 
 
 def get_predictor(_target_id: Optional[str] = None, backend_name: Optional[str] = None,
