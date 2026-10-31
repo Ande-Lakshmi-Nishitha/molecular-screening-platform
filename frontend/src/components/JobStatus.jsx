@@ -1,6 +1,9 @@
 // components/JobStatus.jsx - owner: Abheetha
-// One row per tier: its state, its result once done, and the reason when it failed or was skipped.
+// The triage summary, then one row per tier: its state, its formatted result once done, and the reason
+// when it failed or was skipped (MSP-36, MSP-37).
 import { stateLabel, taskReason, tierLabel } from "../api/jobState";
+import TierResult from "./TierResult";
+import TriageSummary from "./TriageSummary";
 
 const BADGE_COLOURS = {
   queued: "#475467",
@@ -38,10 +41,7 @@ function TierRow({ task }) {
       {task.status === "done" && task.result && (
         <div data-testid={`tier-${task.tier}-result`} style={{ marginTop: 8 }}>
           <div style={{ fontSize: 12, color: "#475467" }}>Model version {task.result.model_version}</div>
-          {/* Raw payload for now; the formatted results view with units and labels is MSP-37. */}
-          <pre style={{ whiteSpace: "pre-wrap", margin: "4px 0 0", fontSize: 12 }}>
-            {JSON.stringify(task.result.payload, null, 2)}
-          </pre>
+          <TierResult tier={task.tier} payload={task.result.payload} />
         </div>
       )}
     </li>
@@ -56,6 +56,7 @@ export default function JobStatus({ job }) {
         Job status: <strong data-testid="job-status">{stateLabel(job.status)}</strong>
       </p>
       <p style={{ fontSize: 12, color: "#475467" }}>Job {job.job_id}</p>
+      <TriageSummary summary={job.summary} />
       <ul style={{ padding: 0 }}>
         {job.tasks.map((task) => (
           <TierRow key={task.id} task={task} />
