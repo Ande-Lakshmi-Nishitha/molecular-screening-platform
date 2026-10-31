@@ -6,6 +6,7 @@ one; the stub backend is the real one (it needs no models).
 Run from the repo root with:  python -m unittest discover -s tests -t .
 """
 # pylint: disable=missing-function-docstring,missing-class-docstring
+import importlib.util
 import logging
 import unittest
 import uuid
@@ -21,6 +22,8 @@ from sqlalchemy.pool import StaticPool
 from backend.celery_app import TASK_NAMES, celery_app
 from backend.db.models import Base, Job, JobTask, Molecule, Result, User
 from backend.registry.loader import ModelLoadError
+from backend.workers.common import task_lifecycle
+from backend.workers.qml.backend import QuantumCancelled
 from backend.workers.qml import predictor, tasks
 
 SETTINGS = SimpleNamespace(qml_conv_threshold_mha=1.6)
@@ -138,7 +141,7 @@ class FailureTests(TaskCase):
 
     def test_the_soft_time_limit_is_timeout(self):
         class Slow:
-            def predict_smiles(self, _smiles):
+            def predict_smiles(self, _smiles, should_cancel=None):
                 raise SoftTimeLimitExceeded()
         self.assertEqual(self.run_task(model=Slow()), tasks.OUTCOME_FAILED)
         self.assert_failed(tasks.ERROR_TIMEOUT)
@@ -155,16 +158,113 @@ class FailureTests(TaskCase):
         class Flaky:
             calls = 0
 
-            def predict_smiles(self, smiles):
+            def predict_smiles(self, smiles, should_cancel=None):
                 Flaky.calls += 1
                 if Flaky.calls == 1:
                     raise ConnectionError("lost")
-                return predictor.get_predictor(settings=SETTINGS).predict_smiles(smiles)
+                return predictor.get_predictor(settings=SETTINGS).predict_smiles(smiles, should_cancel)
         self.assertEqual(tasks.run_qml_task_with_delay(str(self.qml_id), lambda _t: Flaky()), (tasks.OUTCOME_RETRY, 5))
         self.assertEqual(self.row()[0], "queued")
         self.assertEqual(tasks.run_qml_task(str(self.qml_id), lambda _t: Flaky()), tasks.OUTCOME_DONE)
         self.assertEqual(len(self.results()), 1)
 
+
+
+@unittest.skipUnless(all(importlib.util.find_spec(n) for n in ("pennylane", "pyscf")),
+                     "needs PennyLane and PySCF (requirements-qml.txt, Linux only)")
+class RealBackendTaskTests(TaskCase):
+    def test_a_queued_task_finishes_with_one_stored_real_result(self):
+        model = predictor.get_predictor(backend_name="vqe", settings=SETTINGS)
+        self.assertEqual(self.run_task(model=model), tasks.OUTCOME_DONE)
+        self.assertEqual(self.row()[0], "done")
+        (result,) = self.results()
+        self.assertEqual(result.model_version, "qml_vqe@1.0.0")
+        self.assertFalse(result.payload["is_stub"])
+        self.assertEqual(result.payload["electronic_stability"]["metric"], "vqe_excitation_gap")
+        self.assertTrue(result.payload["convergence"]["converged"])
+        self.assertFalse(result.payload["excluded_from_triage"])
+
+    def test_cancelling_during_a_real_run_stops_it_and_stores_nothing(self):
+        model = predictor.get_predictor(backend_name="vqe", settings=SETTINGS)
+        real = model.predict_smiles
+
+        def cancel_first(smiles, should_cancel=None):
+            self.cancel_in_database()
+            return real(smiles, should_cancel)
+
+        with patch.object(task_lifecycle, "CANCEL_POLL_S", 0), \
+                patch.object(model, "predict_smiles", cancel_first):
+            outcome = self.run_task(model=model)
+        self.assertEqual(outcome, tasks.OUTCOME_DROPPED)
+        self.assertEqual((self.row()[0], self.results()), ("cancelled", []))
+
+    def cancel_in_database(self):
+        with Session(self.engine) as session:
+            session.get(JobTask, self.qml_id).status = "cancelled"
+            session.commit()
+
+
+class CancelWhileRunningTests(TaskCase):
+    """FR-029: a long quantum run notices that the user cancelled it and stops."""
+
+    def cancel_in_database(self):
+        with Session(self.engine) as session:
+            session.get(JobTask, self.qml_id).status = "cancelled"
+            session.commit()
+
+    def test_the_backend_is_given_a_cancel_check_and_stops_when_the_task_is_cancelled(self):
+        test, calls = self, []
+
+        class Slow:
+            def predict_smiles(self, _smiles, should_cancel=None):
+                calls.append(should_cancel())            # not cancelled yet
+                test.cancel_in_database()
+                calls.append(should_cancel())            # now it is
+                raise QuantumCancelled("cancelled")
+
+        with patch.object(task_lifecycle, "CANCEL_POLL_S", 0):
+            outcome = self.run_task(model=Slow())
+        self.assertEqual(calls, [False, True])
+        self.assertEqual(outcome, tasks.OUTCOME_DROPPED)            # a cancel is not a failure
+        self.assertEqual((self.row()[0], self.results()), ("cancelled", []))
+
+    def test_the_database_is_asked_at_most_once_per_poll_interval(self):
+        reads = []
+
+        class Looping:
+            def predict_smiles(self, _smiles, should_cancel=None):
+                for _ in range(50):
+                    should_cancel()
+                return predictor.get_predictor(settings=SETTINGS).predict_smiles("CCO")
+
+        with patch.object(task_lifecycle.task_state, "is_cancelled",
+                          side_effect=lambda *a: reads.append(1) or False), \
+                patch.object(task_lifecycle, "CANCEL_POLL_S", 3600):
+            self.assertEqual(self.run_task(model=Looping()), tasks.OUTCOME_DONE)
+        self.assertEqual(reads, [])
+
+    def test_once_cancelled_the_database_is_not_asked_again(self):
+        reads = []
+
+        class Persistent:
+            def predict_smiles(self, _smiles, should_cancel=None):
+                answers = [should_cancel(), should_cancel(), should_cancel()]
+                raise QuantumCancelled(str(answers))
+
+        with patch.object(task_lifecycle.task_state, "is_cancelled",
+                          side_effect=lambda *a: reads.append(1) or True), \
+                patch.object(task_lifecycle, "CANCEL_POLL_S", 0):
+            self.run_task(model=Persistent())
+        self.assertEqual(reads, [1])
+
+    def test_a_failure_that_is_not_a_cancel_is_still_a_failure(self):
+        class Broken:
+            def predict_smiles(self, _smiles, should_cancel=None):
+                should_cancel()
+                raise RuntimeError("boom")
+
+        self.assertEqual(self.run_task(model=Broken()), tasks.OUTCOME_FAILED)
+        self.assertEqual(self.row()[:2], ("failed", "COMPUTE_ERROR"))
 
 class CeleryWiringTests(unittest.TestCase):
     def test_the_task_is_registered_under_the_agreed_name(self):

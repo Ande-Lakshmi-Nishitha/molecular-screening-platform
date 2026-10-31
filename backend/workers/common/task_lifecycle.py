@@ -21,6 +21,7 @@ This module adds what is specific to the model tiers:
 Log lines hold the task id and the exception class, never the structure (SEC-007).
 Pure SQLAlchemy and Celery code: no RDKit, torch or XGBoost imports.
 """
+import time
 import uuid
 from typing import Any, Callable, Optional, Tuple
 
@@ -28,6 +29,7 @@ from sqlalchemy import select
 
 from backend.core.config import Settings
 from backend.db.models import Job, JobTask, Molecule
+from backend.db.repositories import task_state
 from backend.registry.loader import ModelLoadError
 from backend.workers.common import base_task
 
@@ -65,9 +67,32 @@ def _tier_of(session, task_id) -> Optional[str]:
     return session.execute(select(JobTask.tier).where(JobTask.id == task_id)).scalar_one_or_none()
 
 
-def _model_step(task_id, tier, get_model, log, scope) -> dict:
+CANCEL_POLL_S = 1.0
+
+
+def _cancel_check(task_id, scope, stopped: list) -> Callable[[], bool]:
+    """A should_cancel() for a long loop: asks the database at most once per CANCEL_POLL_S seconds."""
+    last = [time.monotonic()]
+
+    def should_cancel() -> bool:
+        if stopped:
+            return True
+        now = time.monotonic()
+        if now - last[0] < CANCEL_POLL_S:
+            return False
+        last[0] = now
+        with scope() as session:
+            if task_state.is_cancelled(session, task_id):
+                stopped.append(True)
+        return bool(stopped)
+
+    return should_cancel
+
+
+def _model_step(task_id, tier, get_model, log, scope, stopped: Optional[list] = None) -> dict:
     """The compute() that base_task.run_task calls after the claim. Raises on failure."""
     # pylint: disable=broad-exception-caught
+    stopped = [] if stopped is None else stopped   # filled when the task is found cancelled while it runs
     with scope() as session:
         smiles, target_id = read_inputs(session, task_id)
     try:
@@ -78,9 +103,15 @@ def _model_step(task_id, tier, get_model, log, scope) -> dict:
     try:
         if not smiles:
             raise LookupError("molecule not found")
-        result = model.predict_smiles(smiles)
+        if tier == "qml":   # a quantum run takes minutes: it stops between iterations when cancelled (FR-029)
+            result = model.predict_smiles(smiles, should_cancel=_cancel_check(task_id, scope, stopped))
+        else:
+            result = model.predict_smiles(smiles)
     except Exception as exc:
-        log.error("%s compute failed: %s", tier, type(exc).__name__)
+        if stopped:
+            log.info("%s task %s was cancelled while it ran", tier, task_id)
+        else:
+            log.error("%s compute failed: %s", tier, type(exc).__name__)
         raise
     return {"model_version": result.model_version, "params_hash": result.params_hash,
             "payload": result.payload}
@@ -103,14 +134,17 @@ def run_task(job_task_id, tier: str, get_model: Callable[[Optional[str]], Any], 
             return OUTCOME_IGNORED, 0
 
     ran = []
+    cancelled: list = []
 
     def compute():
         ran.append(True)
-        return _model_step(task_id, tier, get_model, log, scope)
+        return _model_step(task_id, tier, get_model, log, scope, cancelled)
 
     if max_retries is None:
         max_retries = Settings.from_env().task_max_retries
     outcome, delay = base_task.run_task(task_id, compute, scope, max_retries)
+    if outcome == "failed" and cancelled:
+        outcome = OUTCOME_DROPPED   # it stopped because the user cancelled it: not a failure
     if outcome == "dropped" and not ran:
         return OUTCOME_IGNORED, 0   # never claimed: finished, cancelled or already running elsewhere
     if outcome == "dropped":
