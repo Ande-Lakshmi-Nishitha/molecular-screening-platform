@@ -19,6 +19,8 @@ from backend.api.openapi import openapi_bp
 from backend.core.logging_filter import install_log_filter
 from backend.api.molecules.search_routes import search_bp
 from backend.api.targets.routes import targets_bp
+from backend.api.jobs.report import report_bp
+from backend.api.models_info.routes import models_bp
 
 DEFAULT_MAX_REQUEST_BYTES = 1024 * 1024
 DEFAULT_FRONTEND_ORIGIN = "https://localhost"
@@ -34,6 +36,8 @@ def register_blueprints(app):
     app.register_blueprint(jobs_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(targets_bp)
+    app.register_blueprint(report_bp)
+    app.register_blueprint(models_bp)
 
 
 def _install_cors(app):
