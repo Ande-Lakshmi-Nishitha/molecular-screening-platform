@@ -1,0 +1,7 @@
+# Extra runtime dependencies for the real QML backend (MSP-28, TBD-C5: PennyLane). Pinned exactly (SEC-008).
+# Kept apart from requirements.txt because they are large (about 800 MB with their dependencies) and only
+# the QML worker image and the QML tests need them. Linux only: PySCF has no Windows build, so on a
+# Windows machine the QML tests that need them are skipped and QML_BACKEND stays "stub".
+# Install with: pip install -r requirements-qml.txt     Select the backend with: QML_BACKEND=vqe
+pennylane==0.45.1
+pyscf==2.14.0

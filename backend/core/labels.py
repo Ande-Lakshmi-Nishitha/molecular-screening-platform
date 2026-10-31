@@ -152,10 +152,24 @@ def domain_labels(model_version: str) -> Dict[str, str]:
 
 
 LIMITATION_QML = (
-    "Estimated by a quantum-chemistry calculation for a small molecule in a small active space. "
-    "The HOMO-LUMO gap is an indicator of electronic stability only: it is not a measurement, it "
-    "depends on the method and active space used, and it says nothing about reactivity, shelf "
-    "life or biological behaviour. A run that did not converge is flagged and less reliable."
+    "Estimated by a quantum-chemistry calculation (a simulated quantum algorithm, not a measurement) for "
+    "a small molecule in a small active space of a minimal basis set. The value is the energy needed to "
+    "reach the lowest excited singlet state, an indicator of electronic stability only. It depends on the "
+    "method, geometry and active space used, it is not the same as the Hartree-Fock HOMO-LUMO gap shown "
+    "beside it, and it says nothing about reactivity, shelf life or biological behaviour. A run that did "
+    "not converge is flagged and left out of the triage."
+)
+
+LIMITATION_QML_REFERENCE = (
+    "Classical reference calculations on the same geometry, basis set and active space as the quantum "
+    "run, shown so that the run can be judged. They are calculated values, not measurements. The "
+    "Hartree-Fock gap is the lowest unoccupied minus the highest occupied orbital energy of the whole "
+    "molecule; the full-CI gap is the exact energy to the lowest excited singlet inside the active space."
+)
+
+WARNING_QML_NOT_CONVERGED = (
+    "This quantum calculation did not reach its accuracy target against the full configuration-"
+    "interaction reference, so its value is less reliable and is left out of the triage."
 )
 
 # Words that must never be used to describe a molecule (NFR-011), matched as whole words.
@@ -167,6 +181,11 @@ def qml_labels(is_stub: bool, model_version: str) -> Dict[str, str]:
     if is_stub:
         return qml_stub_labels(model_version)
     return {"unit": UNIT_EV, "limitation": LIMITATION_QML, "model_version": model_version}
+
+
+def qml_reference_labels(model_version: str) -> Dict[str, str]:
+    """Label fields for the classical-reference block that sits beside a real quantum result."""
+    return {"unit": UNIT_EV, "limitation": LIMITATION_QML_REFERENCE, "model_version": model_version}
 
 
 def all_wording() -> Dict[str, str]:

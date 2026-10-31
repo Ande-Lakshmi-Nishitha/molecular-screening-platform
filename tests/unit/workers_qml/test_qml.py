@@ -144,7 +144,7 @@ class EligibilityAndLoadingTests(unittest.TestCase):
 
     def test_an_unknown_backend_is_refused_without_a_fallback(self):
         with self.assertRaises(ModelLoadError):
-            predictor.get_predictor(backend_name="vqe", settings=SETTINGS)
+            predictor.get_predictor(backend_name="no-such-backend", settings=SETTINGS)
         with patch.dict(os.environ, {"QML_BACKEND": "something-else"}):
             with self.assertRaises(ModelLoadError):
                 predictor.get_predictor(settings=SETTINGS)
@@ -156,12 +156,6 @@ class EligibilityAndLoadingTests(unittest.TestCase):
 
     def test_the_default_threshold_is_read_from_the_real_settings(self):
         self.assertEqual(predictor.get_predictor().threshold_mha, 1.6)
-
-    def test_a_non_stub_backend_has_no_wording_yet(self):
-        class Real(StubBackend):
-            is_stub = False
-        with self.assertRaises(ModelLoadError):
-            predictor.QmlPredictor(Real(), 1.6).predict_smiles(ETHANOL)
 
 
 class WordingTests(unittest.TestCase):
