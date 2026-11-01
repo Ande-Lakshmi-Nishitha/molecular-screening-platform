@@ -1,0 +1,7 @@
+MSP-41 load test
+hardware: {'machine': 'Windows-11-10.0.26200-SP0', 'cpu': 'AMD64 Family 25 Model 124 Stepping 0, AuthenticAMD', 'logical_cores': 12, 'python': '3.13.13', 'ram_gb': 15.3}
+jobs: 20 finished of 20, users: 10
+timing: 60 tier results from server timestamps, 0 from the client clock
+ML p95: 380 ms (limit 1000) PASS over 20 jobs
+DL p95: 240 ms (limit 3000) PASS over 20 jobs
+RUN VALID: no failed calls, no 429s, every tier done on every job

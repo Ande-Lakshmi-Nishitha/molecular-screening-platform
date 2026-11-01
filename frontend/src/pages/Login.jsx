@@ -30,15 +30,19 @@ export default function Login() {
 
   return (
     <div style={{ maxWidth: 360, margin: "60px auto" }}>
-      <h1>Sign in</h1>
-      {notice && <p role="status">{notice}</p>}
-      <ErrorBanner error={error} />
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
-        <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: "100%" }} /></label>
-        <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: "100%" }} /></label>
-        <button type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
+      <h1 data-testid="login-heading">Sign in</h1>
+      {notice && <p role="status" data-testid="login-notice">{notice}</p>}
+      {error && (
+        <div data-testid="login-error">
+          <ErrorBanner error={error} />
+        </div>
+      )}
+      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }} data-testid="login-form">
+        <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: "100%" }} data-testid="login-email" /></label>
+        <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: "100%" }} data-testid="login-password" /></label>
+        <button type="submit" disabled={busy} data-testid="login-submit">{busy ? "Signing in…" : "Sign in"}</button>
       </form>
-      <p>No account? <Link to="/register">Register</Link></p>
+      <p>No account? <Link to="/register" data-testid="login-register-link">Register</Link></p>
     </div>
   );
 }
