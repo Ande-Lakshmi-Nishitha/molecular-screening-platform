@@ -160,8 +160,15 @@ class OpenApiTests(unittest.TestCase):
         self.assertTrue(self.spec["openapi"].startswith("3."))
 
     def test_lists_every_srs_endpoint(self):
-        for path in ("/api/auth/login", "/api/molecules/submit", "/api/jobs/{id}/results",
-                     "/api/targets", "/api/models", "/healthz", "/readyz"):
+        for path in (
+            "/api/auth/login",
+            "/api/molecules/submit",
+            "/api/jobs/{job_id}",
+            "/api/targets",
+            "/api/models",
+            "/healthz",
+            "/readyz",
+        ):
             self.assertIn(path, self.spec["paths"])
 
     def test_error_schema_matches_envelope(self):
