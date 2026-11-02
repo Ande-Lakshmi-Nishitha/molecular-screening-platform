@@ -27,6 +27,8 @@ export default function App() {
             <Route path="/jobs" element={<JobTracker />} />
             <Route path="/jobs/:id" element={<JobTracker />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/results" element={<Results />} />
+            <Route path="/results/:id" element={<Results />} />
             <Route path="/history" element={<History />} />
             <Route path="/compare" element={<Compare />} />
             <Route path="/model" element={<ModelInfo />} />
