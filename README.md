@@ -78,6 +78,15 @@ npm run dev
 
 Open the address it prints (usually `http://localhost:5173`). It forwards `/api` to the stack at `https://localhost`.
 
+### Sprint Video
+Sprint 1 :
+
+https://github.com/user-attachments/assets/9653d8ec-0844-49aa-9d2d-9a1736216ded
+
+Sprint 2 : 
+
+https://github.com/user-attachments/assets/bd7178a0-c7f3-4072-a356-65fc8466265b
+
 ## Usage
 
 1. **Register**, then **log in**. After a period of inactivity the session expires and you are sent back to the login page.
