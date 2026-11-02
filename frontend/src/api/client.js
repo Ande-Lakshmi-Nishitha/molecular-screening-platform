@@ -75,5 +75,14 @@ export const api = {
   getModels: () => request("/models"),
   listJobs: (page, pageSize) => request(`/jobs?page=${page}&page_size=${pageSize}`),
 };
-
+// Root-level probes (/healthz, /readyz) are not under /api. A failure is a result, not an exception.
+export async function probe(path) {
+  try {
+    const res = await fetch(path);
+    const data = await res.json().catch(() => ({}));
+    return { available: res.ok, status: res.status, data };
+  } catch (error) {
+    return { available: false, status: 0, data: {}, message: error.message };
+  }
+}
 export { ApiError };
