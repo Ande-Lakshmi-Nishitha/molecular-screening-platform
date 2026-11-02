@@ -79,6 +79,13 @@ export default function JobTracker() {
       <ErrorBanner error={cancelError} />
       {!job && !error && <p>Loading job…</p>}
       <JobStatus job={job} />
+      {job && (
+        <p>
+          <Link to={`/results/${id}`}>
+            View Screening Results
+          </Link>
+        </p>
+      )}
       {canCancel(job) && !confirming && (
         <button type="button" data-testid="cancel-button" onClick={() => setConfirming(true)}>
           Cancel job
