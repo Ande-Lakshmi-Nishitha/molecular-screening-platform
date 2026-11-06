@@ -13,6 +13,7 @@ import History from "./pages/History";
 import Compare from "./pages/Compare";
 import ModelInfo from "./pages/ModelInfo";
 import Admin from "./pages/Admin";
+import "./styles.css";
 
 export default function App() {
   return (
