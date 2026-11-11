@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { api, probe } from "../api/client";
-import ErrorBanner from "../components/ErrorBanner";
+import { probe } from "../api/client";
 
 function Status({ available }) {
   return (
@@ -35,35 +34,19 @@ function Metric({ title, value, description }) {
 export default function Admin() {
   const [health, setHealth] = useState(null);
   const [readiness, setReadiness] = useState(null);
-  const [models, setModels] = useState(null);
-  const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const refreshDashboard = useCallback(async () => {
     setLoading(true);
-    setErrors([]);
 
-    const [healthResult, readyResult, modelResult] =
-      await Promise.all([
-        probe("/healthz"),
-        probe("/readyz"),
-        api.getModels().then(
-          (data) => ({ success: true, data }),
-          (error) => ({ success: false, error })
-        ),
-      ]);
+    const [healthResult, readyResult] = await Promise.all([
+      probe("/healthz"),
+      probe("/readyz"),
+    ]);
 
     setHealth(healthResult);
     setReadiness(readyResult);
-
-    if (modelResult.success) {
-      setModels(modelResult.data);
-    } else {
-      setModels(null);
-      setErrors([modelResult.error]);
-    }
-
     setLastUpdated(new Date());
     setLoading(false);
   }, []);
@@ -73,18 +56,11 @@ export default function Admin() {
   }, [refreshDashboard]);
 
   const checks = readiness?.data?.checks || {};
-  const modelList = Array.isArray(models)
-    ? models
-    : models?.models || models?.tiers || [];
 
   return (
     <div style={{ padding: 20 }}>
       <h1>Admin Dashboard</h1>
-      <p>System monitoring and model information.</p>
-
-      {errors.map((error, index) => (
-        <ErrorBanner key={index} error={error} />
-      ))}
+      <p>System monitoring and service health.</p>
 
       <div
         style={{
@@ -119,8 +95,11 @@ export default function Admin() {
         <Metric
           title="Backend"
           value={
-            loading ? "Checking..." :
-            health?.available ? "Online" : "Offline"
+            loading
+              ? "Checking..."
+              : health?.available
+                ? "Online"
+                : "Offline"
           }
           description="Flask liveness check"
         />
@@ -135,15 +114,6 @@ export default function Admin() {
           title="Redis"
           value={loading ? "Checking..." : checks.redis || "Unknown"}
           description="Redis connectivity"
-        />
-
-        <Metric
-          title="Model API"
-          value={
-            loading ? "Checking..." :
-            models !== null ? "Responding" : "Unavailable"
-          }
-          description="Model information endpoint"
         />
       </div>
 
@@ -163,8 +133,11 @@ export default function Admin() {
             <tr>
               <td>Flask Backend</td>
               <td>
-                {loading ? "Checking..." :
-                  <Status available={health?.available} />}
+                {loading ? (
+                  "Checking..."
+                ) : (
+                  <Status available={health?.available} />
+                )}
               </td>
               <td>GET /healthz</td>
             </tr>
@@ -172,8 +145,11 @@ export default function Admin() {
             <tr>
               <td>PostgreSQL</td>
               <td>
-                {loading ? "Checking..." :
-                  <Status available={checks.postgres === "ok"} />}
+                {loading ? (
+                  "Checking..."
+                ) : (
+                  <Status available={checks.postgres === "ok"} />
+                )}
               </td>
               <td>Database readiness check</td>
             </tr>
@@ -181,8 +157,11 @@ export default function Admin() {
             <tr>
               <td>Redis</td>
               <td>
-                {loading ? "Checking..." :
-                  <Status available={checks.redis === "ok"} />}
+                {loading ? (
+                  "Checking..."
+                ) : (
+                  <Status available={checks.redis === "ok"} />
+                )}
               </td>
               <td>Redis readiness check</td>
             </tr>
@@ -191,14 +170,11 @@ export default function Admin() {
 
         {readiness && (
           <p>
-            Overall readiness:{" "}
-            <Status available={readiness.available} />
-            {" "}(HTTP {readiness.status})
+            Overall readiness: <Status available={readiness.available} /> (HTTP{" "}
+            {readiness.status})
           </p>
         )}
       </section>
-
-      
     </div>
   );
 }
