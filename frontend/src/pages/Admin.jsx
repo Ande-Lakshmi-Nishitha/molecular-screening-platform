@@ -198,45 +198,7 @@ export default function Admin() {
         )}
       </section>
 
-      <section>
-        <h2>Model Information</h2>
-
-        {loading && <p>Loading model information...</p>}
-
-        {!loading && models === null && (
-          <p>Model information could not be retrieved.</p>
-        )}
-
-        {!loading && modelList.length > 0 && (
-          <table style={{ width: "100%" }}>
-            <thead>
-              <tr>
-                <th align="left">Model</th>
-                <th align="left">Information</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {modelList.map((model, index) => (
-                <tr key={model.id || model.name || index}>
-                  <td>{model.name || model.id || `Model ${index + 1}`}</td>
-                  <td>
-                    <pre style={{ whiteSpace: "pre-wrap" }}>
-                      {JSON.stringify(model, null, 2)}
-                    </pre>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {!loading && models !== null && modelList.length === 0 && (
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {JSON.stringify(models, null, 2)}
-          </pre>
-        )}
-      </section>
+      
     </div>
   );
 }
